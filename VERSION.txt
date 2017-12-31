@@ -2,7 +2,7 @@
 // +--------------------------------------------------------------------------------------------+ //
 // Camoo/Sms Version
 //
-// Holds a static string representing the current version of CAMOO/Airtime
+// Holds a static string representing the current version of Camoo/Sms
 //
 // Copyright     Copyright (c) CAMOO SARL (http://camoo.cm)
 //
@@ -14,4 +14,4 @@
 // @license       http://www.opensource.org/licenses/mit-license.php MIT License
 // +--------------------------------------------------------------------------------------------+ //
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-1.2.1
+3.0.0
