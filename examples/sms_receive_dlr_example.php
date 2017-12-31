@@ -42,17 +42,17 @@ if ($id=='' || !$status=='' || !$phone=='' || !$date=='') {
 /*Check DLR data with message data in your storage. If the unique id has no maching record in the storage
 discard DLR data. If the re is a match, update record of message with the DLR data. Store data to persistent storage.
 in this example we use PDO connector to a mysql database. In order for this example to work:
-i.	$pdo should be the PDO database connector.
-ii.	Messages should be stored to database table named sms_messages
-iii.	sms_messages should have the following structure:
-id				int		autoincrement
-camoo_sms_id			int
-sender			varchar
-phone			bigint
-message			text
-sent_date		datetime
-status			varchar
-status_date		datetime	*/
+i.  $pdo should be the PDO database connector.
+ii. Messages should be stored to database table named sms_messages
+iii.    sms_messages should have the following structure:
+id              int     autoincrement
+camoo_sms_id            int
+sender          varchar
+phone           bigint
+message         text
+sent_date       datetime
+status          varchar
+status_date     datetime    */
 
 
 /*Check if DLR data match with a message sent*/

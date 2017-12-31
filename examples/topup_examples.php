@@ -1,13 +1,17 @@
 <?php
-    require_once(dirname(__DIR__)."/src/Sms.php");
+    require_once dirname(dirname(dirname(__DIR__))) . '/autoload.php';
     /**
      * @Brief recharge user account
      * Only available for Mobile Money MTN Cameroon Ltd
      */
-    // Step 1: Declare new Camoo\Sms\Sms.
-    $oSMS = new Camoo\Sms\Sms('api_key', 'secret_key');
-
-    var_export($oSMS->topup(['phonenumber' => '671234567', 'amount' => 4000]));
+    // Step 1: create balance instance
+    $oBalance = \Camoo\Sms\Balance::create();
+    // Step2: assert needed data
+    $oBalance->phonenumber = '671234567';
+    $oBalance->amount = 4000;
+    
+   // Step3: Add Balance to your account
+    var_export($oBalance->add());
 
 // output:
 /*
@@ -23,7 +27,7 @@ stdClass Object
     [code] => 200
 )
 
-// Step2 :
+// Step4 :
     - Dial *126*1#
     - Choose option to authorize the transaction
     - Enter your MTN Mobile Money PIN

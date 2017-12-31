@@ -11,20 +11,51 @@ This library needs minimum requirement for doing well on run.
    - Ask CAMOO Team for new access_key for developers
    - CAMOO SMS API client for PHP requires version 5.4.x and above
 
+## Installation via Composer
+
+Package is available on [Packagist](https://packagist.org/packages/camoo/sms),
+you can install it using [Composer](http://getcomposer.org).
+
+```shell
+composer require camoo/sms
+```
+
+### Edit config/app.php
+```php
+	return [
+	   'App' => [
+	    'api_key' => '592595095', // add your api_key
+	    'api_secret' => '79b89479847b9798479494984', // add your api_secret
+	    'response_format' => 'json',// json or xml
+	    ]
+	];
+  ```
+
 Quick Examples
 
 1) Sending a SMS
 ```php
-    $oSMS = new Camoo\Sms\Sms('account_key', 'account_secret');
-    $orSMS = $oSMS->sendText( '+237623456790', 'MyApp', 'Hello Kmer world!' );
+	$oSMS = \Camoo\Sms\Message();
+	$oSMS->from ='YourCompany';
+	$oSMS->to = '+237612345678';
+	$oSMS->datacoding ='auto'; // possible values: plain,text,unicode or auto
+	$oSMS->type ='sms';
+	$oSMS->message ='Hello Kmer World! Déjà vu!';
+
+	var_dump($oSMS->send());
   ```
 2)  Send the same SMS to many recipients
             
             - Per request, a max of 50 recipients can be entered.
 ```php
-     $oSMS = new Camoo\Sms\Sms('account_key', 'account_secret');
-     $orSMS = $oSMS->sendText( ['+237623456790', '+237623456791', '+237623456792'], 'MyApp', 'Hello Kmer world!' );
-     var_dump($orSMS);
+	$oSMS = \Camoo\Sms\Message();
+	$oSMS->from ='YourCompany';
+	$oSMS->to =['+237612345678', '+237612345679', '+237612345610', '+33689764530'];
+	$oSMS->datacoding ='auto';
+	$oSMS->type ='sms';
+	$oSMS->message ='Hello Kmer World! Déjà vu!';
+
+	var_dump($oSMS->send());
 ```
 Most Frequent Issues
 --------------------

@@ -1,13 +1,14 @@
 <?php
-    require_once(dirname(__DIR__)."/src/Sms.php");
+   require_once dirname(dirname(dirname(__DIR__))) . '/autoload.php';
     /**
      * @Brief read current balance
      *
      */
-    // Step 1: Declare new Camoo\Sms\Sms.
-    $oSMS = new Camoo\Sms\Sms('api_key', 'secret_key');
- 
-    var_export($oSMS->getBalance());
+    // Step 1: create balance instance
+    $oBalance = \Camoo\Sms\Balance::create();
+
+   // Step2: retrieve your current balance
+    var_export($oBalance->get());
 
 // output:
 /*

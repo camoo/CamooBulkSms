@@ -1,0 +1,38 @@
+{
+    "name": "camoo/sms",
+    "description": "CAMOO API Packages",
+    "type": "library",
+    "require": {
+        "vlucas/valitron": "^1.4",
+        "guzzlehttp/guzzle": "^6.2",
+        "giggsey/libphonenumber-for-php": "^8.8"
+    },
+   "minimum-stability": "dev",
+   "homepage": "https://camoo.cm",
+    "license": "MIT",
+   "prefer-stable" : true,
+    "require-dev": {
+        "php": ">=5.6.0"
+    },
+    "authors": [
+        {
+            "name": "CAMOO SARL",
+            "email": "sms@camoo.sarl"
+        }
+    ],
+    
+     "keywords" : [ 
+	"CAMOO",
+	"SMS",
+	"API-SMS"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Camoo\\Sms\\": "src/"
+        }
+    },
+   "support": {
+        "issues": "https://github.com/camoo/sms/issues",
+        "source": "https://github.com/camoo/sms"
+    }
+}

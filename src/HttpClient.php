@@ -1,9 +1,11 @@
 <?php
 namespace Camoo\Sms;
 
-require_once('Exception/HttpClientException.php');
-
 use Camoo\Sms\Exception\HttpClientException;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7;
+use Valitron\Validator;
 
 /**
  * Class HttpClient
@@ -11,11 +13,9 @@ use Camoo\Sms\Exception\HttpClientException;
  */
 class HttpClient
 {
-    const REQUEST_GET = 'GET';
-    const REQUEST_POST = 'POST';
-
     const HTTP_NO_CONTENT = 204;
-    const CLIENT_VERSION = '1.2.1';
+    const CLIENT_VERSION = '3.0.0';
+    const MIN_PHP_VERSION = 50600;
     /**
      * @var string
      */
@@ -27,6 +27,11 @@ class HttpClient
     protected $userAgent = array();
 
     /**
+     * @var array
+     */
+    protected $hRequestVerbs = ['GET' => 'query', 'POST' => 'form_params'];
+
+    /**
      * @var int
      */
     private $timeout = 10;
@@ -34,39 +39,54 @@ class HttpClient
     /**
     * @var mixed
     */
+    private $hAuthentication = [];
     
-    private $oAuthentication = array();
-    
-    public $ssl_verify = false; // Verify Camoo SSL before sending any message
-
     /**
-     * @var int
+     * @var object
      */
-    private $connectionTimeout = 2;
+    private $oClient = null;
 
     /**
      * @param string $endpoint
      * @param int $timeout > 0
-     * @param int $connectionTimeout >= 0
      *
      * @throws \HttpClientException if timeout settings are invalid
      */
-    public function __construct($endpoint, $hAuthentication, $timeout = 10, $connectionTimeout = 2)
+    public function __construct($endpoint, $hAuthentication, $timeout = 10)
     {
         $this->endpoint = $endpoint;
-        $this->oAuthentication = $hAuthentication;
+        $this->hAuthentication = $hAuthentication;
     
         $this->addUserAgentString('CamooSms/ApiClient/' . static::CLIENT_VERSION);
         $this->addUserAgentString($this->getPhpVersion());
 
-        if (!is_int($connectionTimeout) || $connectionTimeout < 0) {
+        if (!is_int($timeout) || $timeout < 0) {
             throw new HttpClientException(sprintf(
                 'Connection timeout must be an int >= 0, got "%s".',
-                is_object($connectionTimeout) ? get_class($connectionTimeout) : gettype($connectionTimeout).' '.var_export($connectionTimeout, true)
+                is_object($timeout) ? get_class($timeout) : gettype($timeout).' '.var_export($timeout, true)
             ));
         }
 
-        $this->connectionTimeout = $connectionTimeout;
+        $this->timeout = $timeout;
+
+
+        if (is_null($this->oClient)) {
+            $this->oClient = new Client(['timeout' => $this->timeout]);
+        }
+    }
+
+    /**
+     * Validate request params
+     *
+     * @param Validator $oValidator
+     *
+     * @return boolean
+     */
+    private function ValidatorDefault(Validator $oValidator)
+    {
+        $oValidator->rule('required', ['api_key', 'api_secret', 'response_format']);
+        $oValidator->rule('in', 'response_format', ['json', 'xml']);
+        return $oValidator->rule('in', 'request', array_keys($this->hRequestVerbs))->validate();
     }
 
     /**
@@ -86,53 +106,37 @@ class HttpClient
      *
      * @throws HttpClientException
      */
-   
     public function performRequest($method, $data = array())
     {
+        if (PHP_VERSION_ID < static::MIN_PHP_VERSION) {
+               trigger_error("Your PHP-Version belongs to a release that is no longer supported. You should upgrade your PHP version as soon as possible, as it may be exposed to unpatched security vulnerabilities.", E_USER_ERROR);
+        }
         // Build the post data
-        $data = array_merge($data, $this->oAuthentication);
+        $data = array_merge($data, $this->hAuthentication);
         $data['user_agent'] = implode(' ', $this->userAgent);
-        $post = '';
-        foreach ($data as $k => $v) {
-            $post .= "&$k=$v";
-        }
-        // If available, use CURL
-        if (function_exists('curl_version')) {
-            $to_camoo = curl_init();
-            curl_setopt($to_camoo, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($to_camoo, CURLOPT_TIMEOUT, $this->timeout);
-            curl_setopt($to_camoo, CURLOPT_CONNECTTIMEOUT, $this->connectionTimeout);
 
-            if (!$this->ssl_verify) {
-                curl_setopt($to_camoo, CURLOPT_SSL_VERIFYPEER, false);
-            }
-            
-            if ($method === static::REQUEST_GET) {
-                curl_setopt($to_camoo, CURLOPT_HTTPGET, true);
-                $this->endpoint .='?'.$post;
-            } elseif ($method === static::REQUEST_POST) {
-                curl_setopt($to_camoo, CURLOPT_POST, true);
-                curl_setopt($to_camoo, CURLOPT_POSTFIELDS, $post);
-            }
-            curl_setopt($to_camoo, CURLOPT_URL, $this->endpoint);
-            $from_camoo = curl_exec($to_camoo);
-            curl_close($to_camoo);
-        } elseif (ini_get('allow_url_fopen')) {
-            // No CURL available so try the awesome file_get_contents
-            $opts = array('http' =>
-                array(
-                    'method'  => $method,
-                    'header'  => 'Content-type: application/x-www-form-urlencoded',
-                    'content' => $post
-                )
-            );
-            $context = stream_context_create($opts);
-            $from_camoo = file_get_contents($this->endpoint, false, $context);
-        } else {
-            // No way of sending a HTTP post
-            throw new HttpClientException('No way of sending a HTTP Request');
+    // VALIDATE REQUEST
+        $sMethod = strtoupper($method);
+        $oValidator = new Validator(array_merge(['request' => $sMethod], $data));
+        if (empty($this->ValidatorDefault($oValidator))) {
+            throw new HttpClientException('Request not allowed!');
         }
-        return $from_camoo;
+
+    //  UNSET REQUEST FORMAT
+        unset($data['response_format']);
+
+        try {
+            $oResponse = $this->oClient->request($sMethod, $this->endpoint, [$this->hRequestVerbs[$sMethod] => $data]);
+            if ($oResponse->getStatusCode() === 200) {
+                return $oResponse->getBody();
+            }
+            throw new HttpClientException();
+        } catch (RequestException $e) {
+            throw new HttpClientException(Psr7\str($e->getRequest()));
+            if ($e->hasResponse()) {
+                throw new HttpClientException(Psr7\str($e->getResponse()));
+            }
+        }
     }
     
      /**

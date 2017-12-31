@@ -1,8 +1,6 @@
 <?php
 namespace Camoo\Sms;
 
-require_once('Exception/CamooSmsException.php');
-
 use Camoo\Sms\Exception\CamooSmsException;
 
 /**
@@ -15,10 +13,17 @@ class Base
     const DS = '/';
     protected $sEndPoint = 'https://api.camoo.cm';
     
+    protected static $dataObject = null;
+
      /**
      * @var string The resource name as it is known at the server
      */
     protected $resourceName = null;
+
+
+    protected static $hCredentials = [];
+    protected static $_ahConfigs = [];
+    protected static $_create = null;
 
     /**
      * @param $resourceName
@@ -27,6 +32,7 @@ class Base
     {
         $this->resourceName = $resourceName;
     }
+
     /**
      * @return string
      */
@@ -34,11 +40,65 @@ class Base
     {
         return $this->resourceName;
     }
+
+    public static function create($dataObject = null)
+    {
+        if (is_null(static::$_create)) {
+            static::$_create = new self;
+        }
+        static::$_ahConfigs = (require dirname(__DIR__) . static::DS.'config'.static::DS.'app.php');
+        static::$hCredentials = static::$_ahConfigs['App'];
+        return static::$_create;
+    }
+
+    /**
+     * @return object
+     */
+    public function getDataObject()
+    {
+        return self::$dataObject;
+    }
         
+    /**
+     * @return array
+     */
+    public function getConfigs()
+    {
+        return self::$_ahConfigs;
+    }
+
       /**
-      * Target version for "Classic" Camoo API
+      *  @var string Target version for "Classic" Camoo API
       */
     protected $camooClassicApiVersion = 'v1';
+
+
+    public function __get($property)
+    {
+        $hPayload = Objects\Base::create()->get($this->getDataObject());
+        return $hPayload[$property];
+    }
+
+    public function __set($property, $value)
+    {
+        try {
+            Objects\Base::create()->set($property, $value, $this->getDataObject());
+        } catch (CamooSmsException $err) {
+            echo $err->getMessage();
+            exit();
+        }
+        return $this;
+    }
+
+    public function getData()
+    {
+        try {
+            return Objects\Base::create()->get($this->getDataObject());
+        } catch (CamooSmsException $err) {
+            echo $err->getMessage();
+            die;
+        }
+    }
 
 
      /**
@@ -54,20 +114,44 @@ class Base
         if ($this->getResourceName() !== null && $this->getResourceName() !== 'sms') {
             $sResource = static::DS.$this->getResourceName();
         }
-        return sprintf($sUrlTmp.'sms'.$sResource.'%s', '.json');
+        $response_format = !empty(static::$_ahConfigs['App']['response_format'])? static::$_ahConfigs['App']['response_format'] : 'json';
+        return sprintf($sUrlTmp.'sms'.$sResource.'%s', '.' . $response_format);
     }
     
      /**
-      * decode json string
+      * decode camoo response string
       * @throw CamooSmsException
       * @author Epiphane Tchabom
       */
-    protected function decode($sJSON, $bAsHash = false)
+    protected function decode($sBody)
     {
         try {
-            if (($xData = json_decode($sJSON, $bAsHash)) === null
-                && (json_last_error() !== JSON_ERROR_NONE) ) {
-                    throw new CamooSmsException(json_last_error_msg());
+            $sDecoder = 'decode' .ucfirst(static::$_ahConfigs['App']['response_format']);
+            return $this->$sDecoder($sBody);
+        } catch (CamooSmsException $e) {
+            return $e->getMessage();
+        }
+    }
+
+    private function decodeJson($sBody, $bAsHash = false)
+    {
+        try {
+            if (($xData = json_decode($sBody, $bAsHash)) === null
+                    && (json_last_error() !== JSON_ERROR_NONE) ) {
+                throw new CamooSmsException(json_last_error_msg());
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+        return $xData;
+    }
+
+    private function decodeXml($sBody)
+    {
+        try {
+            $oXML = new \SimpleXMLElement($sBody);
+            if (($xData =$oXML->asXML()) === false) {
+                throw new CamooSmsException('response couldn\'t be decoded');
             }
         } catch (\Exception $e) {
             return $e->getMessage();
