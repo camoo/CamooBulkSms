@@ -51,7 +51,7 @@ final class Balance extends Base
     {
     }
 
-    public function ValidatorDefault(Validator $oValidator)
+    public function validatorDefault(Validator $oValidator)
     {
         $oValidator
             ->rule('required', ['phonenumber', 'amount']);

@@ -84,7 +84,7 @@ final class Message extends Base
     {
     }
 
-    public function ValidatorDefault(Validator $oValidator)
+    public function validatorDefault(Validator $oValidator)
     {
         $oValidator
             ->rule('required', ['from', 'message', 'to']);
@@ -97,7 +97,7 @@ final class Message extends Base
         return $oValidator;
     }
 
-    public function ValidatorView(Validator $oValidator)
+    public function validatorView(Validator $oValidator)
     {
         $oValidator
             ->rule('required', ['id']);

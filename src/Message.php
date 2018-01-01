@@ -8,7 +8,7 @@ namespace Camoo\Sms;
  * @license: You are not allowed to sell or distribute this software without permission
  * Copyright reserved
  * File: src/Message.php
- * Updated: Dec. 2017
+ * Updated: Jan. 2018
  * Created by: Camoo Sarl (sms@camoo.sarl)
  * Description: CAMOO SMS LIB
  *
@@ -40,12 +40,12 @@ class Message extends Base
         $hPost = $this->getData();
         // Making sure strings are UTF-8 encoded
         if (!is_numeric($hPost['from']) && !mb_check_encoding($hPost['from'], 'UTF-8')) {
-            trigger_error('from needs to be a valid UTF-8 encoded string');
+            trigger_error('from needs to be a valid UTF-8 encoded string', E_USER_ERROR);
             return false;
         }
 
         if (!mb_check_encoding($hPost['message'], 'UTF-8')) {
-            trigger_error('message needs to be a valid UTF-8 encoded string');
+            trigger_error('message needs to be a valid UTF-8 encoded string', E_USER_ERROR);
             return false;
         }
         return $this->sendSmsRequest($hPost);

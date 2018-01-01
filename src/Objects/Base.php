@@ -12,9 +12,6 @@ class Base
 {
     protected static $_create = null;
 
-    private $oPhoneUtil = null;
-    private $oNumberProto = null;
- 
     public static function create()
     {
         if (is_null(static::$_create)) {
@@ -41,14 +38,14 @@ class Base
         $oClass->$sProperty = $value;
     }
 
-    public function get($oClass, $validate = true, $validator = 'default')
+    public function get($oClass, $validator = 'default')
     {
         if (empty($oClass)) {
             return [];
         }
         $hPayload = get_object_vars($oClass);
-        if ($validate === true && method_exists($oClass, 'Validator' .ucfirst($validator))) {
-            $sValidator = 'Validator' .ucfirst($validator);
+        if (method_exists($oClass, 'validator' .ucfirst($validator))) {
+            $sValidator = 'validator' .ucfirst($validator);
             $oValidator = $oClass->$sValidator(new Validator($hPayload));
             if ($oValidator->validate() === false) {
                 throw new CamooSmsException($oValidator->errors());
@@ -109,42 +106,15 @@ class Base
         return (string)$ret;
     }
 
-    public function isCmMobile($xTel)
+    private function isCmMobile($xTel)
     {
-        return !is_null($this->getPhoneInstane($xTel, 'CM')) && $this->oPhoneUtil->isValidNumber($this->oNumberProto) && !empty($this->oPhoneUtil->getNumberType($this->oNumberProto));
-    }
-
-    private function getPhoneInstane($xTel, $sCcode = 'CM')
-    {
-        if (isset($xTel)) {
-            $this->oPhoneUtil = \libphonenumber\PhoneNumberUtil::getInstance();
-            try {
-                $this->oNumberProto = $this->oPhoneUtil->parse($xTel, $sCcode);
-                return $this->oNumberProto;
-            } catch (\libphonenumber\NumberParseException $e) {
-                return null;
-            }
-        }
-        return null;
-    }
-
-    private function getPhoneCarrier()
-    {
-        if (!is_null($this->oNumberProto)) {
-            $oCarrierMapper = \libphonenumber\PhoneNumberToCarrierMapper::getInstance();
-            $sCarrier = $oCarrierMapper->getNameForNumber($this->oNumberProto, "en");
-            if (!empty($sCarrier)) {
-                $asCarrier = explode(' ', $sCarrier);
-                return strtoupper($asCarrier[0]);
-            }
-        }
-        return null;
+        return (boolean) preg_match('/(?=^6).{9}$/', preg_replace('/[^\dxX]/', '', $xTel));
     }
 
     private function isCmMTN($xTel)
     {
         if ($this->isCmMobile($xTel)) {
-            return $this->getPhoneCarrier() === 'MTN';
+            return (boolean) preg_match('/^(67|650|651|652|653|654|683|680|681|682)\s*/', $xTel);
         }
         return false;
     }

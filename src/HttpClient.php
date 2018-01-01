@@ -14,7 +14,7 @@ use Valitron\Validator;
 class HttpClient
 {
     const HTTP_NO_CONTENT = 204;
-    const CLIENT_VERSION = '3.0.0';
+    const CLIENT_VERSION = '3.0.1';
     const MIN_PHP_VERSION = 50600;
     /**
      * @var string
@@ -82,7 +82,7 @@ class HttpClient
      *
      * @return boolean
      */
-    private function ValidatorDefault(Validator $oValidator)
+    private function validatorDefault(Validator $oValidator)
     {
         $oValidator->rule('required', ['api_key', 'api_secret', 'response_format']);
         $oValidator->rule('in', 'response_format', ['json', 'xml']);

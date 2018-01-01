@@ -46,7 +46,11 @@ class Base
         if (is_null(static::$_create)) {
             static::$_create = new self;
         }
-        static::$_ahConfigs = (require dirname(__DIR__) . static::DS.'config'.static::DS.'app.php');
+        $sConfigFile = dirname(__DIR__) . static::DS.'config'.static::DS.'app.php';
+        if (!file_exists($sConfigFile)) {
+            throw new CamooSmsException(['config' => 'config/app.php is missing!']);
+        }
+        static::$_ahConfigs = (require $sConfigFile);
         static::$hCredentials = static::$_ahConfigs['App'];
         return static::$_create;
     }
@@ -67,9 +71,9 @@ class Base
         return self::$_ahConfigs;
     }
 
-      /**
-      *  @var string Target version for "Classic" Camoo API
-      */
+     /**
+     *  @var string Target version for "Classic" Camoo API
+     */
     protected $camooClassicApiVersion = 'v1';
 
 

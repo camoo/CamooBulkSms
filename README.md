@@ -19,6 +19,11 @@ you can install it using [Composer](http://getcomposer.org).
 ```shell
 composer require camoo/sms
 ```
+## Or go to
+
+	https://github.com/camoo/sms/releases/tag/v3.0.1
+
+And download the full version
 
 ### Edit config/app.php
 ```php
@@ -35,27 +40,27 @@ Quick Examples
 
 1) Sending a SMS
 ```php
-	$oSMS = \Camoo\Sms\Message();
-	$oSMS->from ='YourCompany';
-	$oSMS->to = '+237612345678';
-	$oSMS->datacoding ='auto'; // possible values: plain,text,unicode or auto
-	$oSMS->type ='sms';
-	$oSMS->message ='Hello Kmer World! Déjà vu!';
+	$oMessage = \Camoo\Sms\Message();
+	$oMessage->from ='YourCompany';
+	$oMessage->to = '+237612345678';
+	$oMessage->datacoding ='auto'; // possible values: plain,text,unicode or auto
+	$oMessage->type ='sms';
+	$oMessage->message ='Hello Kmer World! Déjà vu!';
 
-	var_dump($oSMS->send());
+	var_dump($oMessage->send());
   ```
 2)  Send the same SMS to many recipients
             
             - Per request, a max of 50 recipients can be entered.
 ```php
-	$oSMS = \Camoo\Sms\Message();
-	$oSMS->from ='YourCompany';
-	$oSMS->to =['+237612345678', '+237612345679', '+237612345610', '+33689764530'];
-	$oSMS->datacoding ='auto';
-	$oSMS->type ='sms';
-	$oSMS->message ='Hello Kmer World! Déjà vu!';
+	$oMessage = \Camoo\Sms\Message();
+	$oMessage->from ='YourCompany';
+	$oMessage->to =['+237612345678', '+237612345679', '+237612345610', '+33689764530'];
+	$oMessage->datacoding ='auto';
+	$oMessage->type ='sms';
+	$oMessage->message ='Hello Kmer World! Déjà vu!';
 
-	var_dump($oSMS->send());
+	var_dump($oMessage->send());
 ```
 Most Frequent Issues
 --------------------
@@ -66,7 +71,7 @@ Sending a message returns false.
 
   1) Either CURL is enabled for your PHP installation or the PHP option 'allow_url_fopen' is set to 1 (default).
 
-  2) You have no firewalls blocking access to https://api.camoo.cm/v1/sms.json on port 443.
+  2) You have no firewalls blocking access on port 443.
    
 Your message appears to have been sent but you do not recieve it.
 

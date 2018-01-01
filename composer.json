@@ -3,16 +3,16 @@
     "description": "CAMOO API Packages",
     "type": "library",
     "require": {
+        "php": ">=5.6.0",
         "vlucas/valitron": "^1.4",
         "guzzlehttp/guzzle": "^6.2",
-        "giggsey/libphonenumber-for-php": "^8.8"
+	"ext-mbstring": "*"
     },
    "minimum-stability": "dev",
    "homepage": "https://camoo.cm",
     "license": "MIT",
    "prefer-stable" : true,
     "require-dev": {
-        "php": ">=5.6.0"
     },
     "authors": [
         {
@@ -24,6 +24,7 @@
      "keywords" : [ 
 	"CAMOO",
 	"SMS",
+	"SMS Gateway",
 	"API-SMS"
     ],
     "autoload": {
