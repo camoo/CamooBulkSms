@@ -19,11 +19,6 @@ use Camoo\Sms\Exception\CamooSmsException;
 final class Message extends Base
 {
 
-    public static function create()
-    {
-        return new self;
-    }
-
     /**
      * An unique random ID which is created on Camoo SMS
      * platform and is returned for the created object.
@@ -62,27 +57,14 @@ final class Message extends Base
      *
      * @var string
      */
-    public $datacoding = 'auto';
+    public $datacoding = null;
 
     /**
      * The type of message. Values can be: sms, binary or flash
      *
      * @var string
      */
-    public $type = 'sms';
-
-
-    protected function __clone()
-    {
-    }
-
-    /**
-     * constructor
-     *
-     */
-    protected function __construct()
-    {
-    }
+    public $type = null;
 
     public function validatorDefault(Validator $oValidator)
     {

@@ -13,15 +13,13 @@ class Base
     const DS = '/';
     protected $sEndPoint = 'https://api.camoo.cm';
     
-    protected static $dataObject = null;
+    protected static $_dataObject = null;
 
      /**
      * @var string The resource name as it is known at the server
      */
     protected $resourceName = null;
-
-
-    protected static $hCredentials = [];
+    protected static $_credentials = [];
     protected static $_ahConfigs = [];
     protected static $_create = null;
 
@@ -41,7 +39,11 @@ class Base
         return $this->resourceName;
     }
 
-    public static function create($dataObject = null)
+    /**
+     * @return Objects
+     * @throws Exception\CamooSmsException
+     */
+    public static function create()
     {
         if (is_null(static::$_create)) {
             static::$_create = new self;
@@ -51,8 +53,15 @@ class Base
             throw new CamooSmsException(['config' => 'config/app.php is missing!']);
         }
         static::$_ahConfigs = (require $sConfigFile);
-        static::$hCredentials = static::$_ahConfigs['App'];
-        return static::$_create;
+        static::$_credentials = static::$_ahConfigs['App'];
+        $sClass = get_called_class();
+        $asCaller = explode('\\', $sClass);
+        $sCaller  = array_pop($asCaller);
+        $sObjecClass = '\\Camoo\\Sms\\Objects\\'.$sCaller;
+        if (class_exists($sObjecClass)) {
+             static::$_dataObject = new $sObjecClass();
+        }
+        return new $sClass();
     }
 
     /**
@@ -60,7 +69,7 @@ class Base
      */
     public function getDataObject()
     {
-        return self::$dataObject;
+        return self::$_dataObject;
     }
         
     /**
@@ -69,6 +78,15 @@ class Base
     public function getConfigs()
     {
         return self::$_ahConfigs;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCredentials()
+    {
+        return self::$_credentials;
+        ;
     }
 
      /**
@@ -94,16 +112,15 @@ class Base
         return $this;
     }
 
-    public function getData()
+    public function getData($sValidator = 'default')
     {
         try {
-            return Objects\Base::create()->get($this->getDataObject());
+            return Objects\Base::create()->get($this->getDataObject(), $sValidator);
         } catch (CamooSmsException $err) {
             echo $err->getMessage();
             die;
         }
     }
-
 
      /**
       * Returns the CAMOO API URL
@@ -122,11 +139,11 @@ class Base
         return sprintf($sUrlTmp.'sms'.$sResource.'%s', '.' . $response_format);
     }
     
-     /**
-      * decode camoo response string
-      * @throw CamooSmsException
-      * @author Epiphane Tchabom
-      */
+    /**
+     * decode camoo response string
+     * @throw CamooSmsException
+     * @author Epiphane Tchabom
+     */
     protected function decode($sBody)
     {
         try {

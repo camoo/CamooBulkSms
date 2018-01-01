@@ -20,16 +20,9 @@ namespace Camoo\Sms;
  *
  */
 use Camoo\Sms\Exception\CamooSmsException;
-use Camoo\Sms\Objects;
 
 class Message extends Base
 {
-    public static function create($dataObject = null)
-    {
-        static::$dataObject = Objects\Message::create();
-        parent::create(static::$dataObject);
-        return new self;
-    }
 
     /**
      * Send Message
@@ -57,7 +50,7 @@ class Message extends Base
     private function sendSmsRequest($data)
     {
         try {
-            $oHttpClient = new HttpClient($this->getEndPointUrl(), static::$hCredentials);
+            $oHttpClient = new HttpClient($this->getEndPointUrl(), $this->getCredentials());
             return $this->decode($oHttpClient->performRequest('POST', $data));
         } catch (CamooSmsException $err) {
             throw new CamooSmsException('SMS Request can not be performed!');
@@ -73,8 +66,8 @@ class Message extends Base
     {
         try {
             $this->setResourceName('view');
-            $oHttpClient = new HttpClient($this->getEndPointUrl(), static::$hCredentials);
-            return $this->decode($oHttpClient->performRequest('GET', $this->getData()));
+            $oHttpClient = new HttpClient($this->getEndPointUrl(), $this->getCredentials());
+            return $this->decode($oHttpClient->performRequest('GET', $this->getData('view')));
         } catch (CamooSmsException $err) {
             throw new CamooSmsException('View Request can not be performed!');
         }

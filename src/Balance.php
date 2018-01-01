@@ -8,7 +8,7 @@ namespace Camoo\Sms;
  * @license: You are not allowed to sell or distribute this software without permission
  * Copyright reserved
  * File: src/Balance.php
- * Updated: Dec. 2017
+ * Updated: Jan. 2018
  * Created by: Camoo Sarl (sms@camoo.sarl)
  * Description: CAMOO SMS LIB
  *
@@ -21,19 +21,11 @@ namespace Camoo\Sms;
  *
  */
 use Camoo\Sms\Exception\CamooSmsException;
-use Camoo\Sms\Objects;
 
 class Balance extends Base
 {
     const RESOURCE_BALANCE = 'balance';
     const RESOURCE_ADD = 'topup';
-
-    public static function create($dataObject = null)
-    {
-        static::$dataObject = Objects\Balance::create();
-        parent::create(static::$dataObject);
-        return new self;
-    }
 
     /**
     * read the current user balance
@@ -43,7 +35,7 @@ class Balance extends Base
     {
         try {
             $this->setResourceName(static::RESOURCE_BALANCE);
-            $oHttpClient = new HttpClient($this->getEndPointUrl(), static::$hCredentials);
+            $oHttpClient = new HttpClient($this->getEndPointUrl(), $this->getCredentials());
             return $this->decode($oHttpClient->performRequest('GET'));
         } catch (CamooSmsException $err) {
             throw new CamooSmsException('Balance Request can not be performed!');
@@ -60,7 +52,7 @@ class Balance extends Base
     {
         try {
             $this->setResourceName(static::RESOURCE_ADD);
-            $oHttpClient = new HttpClient($this->getEndPointUrl(), static::$hCredentials);
+            $oHttpClient = new HttpClient($this->getEndPointUrl(), $this->getCredentials());
             return $this->decode($oHttpClient->performRequest('POST', $this->getData()));
         } catch (CamooSmsException $err) {
             throw new CamooSmsException('Topup Request can not be performed!');

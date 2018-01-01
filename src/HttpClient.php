@@ -14,7 +14,7 @@ use Valitron\Validator;
 class HttpClient
 {
     const HTTP_NO_CONTENT = 204;
-    const CLIENT_VERSION = '3.0.1';
+    const CLIENT_VERSION = '3.0.2';
     const MIN_PHP_VERSION = 50600;
     /**
      * @var string
@@ -96,7 +96,6 @@ class HttpClient
     {
         $this->userAgent[] = $userAgent;
     }
-
 
     /**
      * @param string      $method
