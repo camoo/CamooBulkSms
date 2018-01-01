@@ -45,9 +45,6 @@ class Base
      */
     public static function create()
     {
-        if (is_null(static::$_create)) {
-            static::$_create = new self;
-        }
         $sConfigFile = dirname(__DIR__) . static::DS.'config'.static::DS.'app.php';
         if (!file_exists($sConfigFile)) {
             throw new CamooSmsException(['config' => 'config/app.php is missing!']);
@@ -61,7 +58,15 @@ class Base
         if (class_exists($sObjecClass)) {
              static::$_dataObject = new $sObjecClass();
         }
-        return new $sClass();
+
+        if (is_null(static::$_create)) {
+            if ($sClass !== __CLASS__) {
+                static::$_create = new $sClass();
+            } else {
+                static::$_create = new self;
+            }
+        }
+        return static::$_create;
     }
 
     /**

@@ -76,6 +76,7 @@ final class Message extends Base
             ->rule('in', 'type', ['sms','binary','flash']);
         $oValidator
             ->rule('in', 'datacoding', ['plain','text','unicode', 'auto']);
+        $this->isPossibleNumber($oValidator, 'to');
         return $oValidator;
     }
 
@@ -85,5 +86,24 @@ final class Message extends Base
             ->rule('required', ['id']);
         $this->notBlankRule($oValidator, 'id');
         return $oValidator;
+    }
+
+    private function isPossibleNumber(&$oValidator, $sParam)
+    {
+        $oValidator
+            ->rule(function ($field, $value, $params, $fields) {
+                $asTo = explode(',', $value);
+                if (empty($value)) {
+                    return false;
+                }
+
+                foreach ($asTo as $sTo) {
+                    $xTel = preg_replace('/[^\dxX]/', '', $sTo);
+                    if (!is_numeric($xTel) || mb_strlen($xTel) <= 10 || mb_strlen($xTel) > 15) {
+                        return false;
+                    }
+                }
+                    return true;
+            }, $sParam)->message("{field} or or more number are not valid!");
     }
 }
