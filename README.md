@@ -39,7 +39,7 @@ And download the full version
 Quick Examples
 --------------
 
-#### Sending a SMS
+##### Sending a SMS
 ```php
 	$oMessage = \Camoo\Sms\Message::create();
 	$oMessage->from ='YourCompany';
@@ -50,9 +50,9 @@ Quick Examples
 
 	var_dump($oMessage->send());
   ```
-#### Send the same SMS to many recipients
+##### Send the same SMS to many recipients
             
-            - Per request, a max of 50 recipients can be entered.
+	- Per request, a max of 50 recipients can be entered.
 ```php
 	$oMessage = \Camoo\Sms\Message:create();
 	$oMessage->from ='YourCompany';
@@ -66,16 +66,12 @@ Quick Examples
 Most Frequent Issues
 --------------------
 
-Sending a message returns false.
+#### Sending a message returns false.
 
-	This is usually due to your webserver unable to send a request to CAMOO. Make sure the following are met:
+This is usually due to your webserver unable to send a request to CAMOO. Make sure the following are met:
 
-  		Either CURL is enabled for your PHP installation or the PHP option 'allow_url_fopen' is set to 1 (default).
-		You have no firewalls blocking access on port 443.
-   
-Your message appears to have been sent but you do not recieve it.
-
-    Run the example.php file included. This will show any errors that are returned from CAMOO.
+ 	Either CURL is enabled for your PHP installation or the PHP option 'allow_url_fopen' is set to 1 (default).
+	You have no firewalls blocking access on port 443.
     
 Handle a status rapport
 ------------------------
