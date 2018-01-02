@@ -13,9 +13,8 @@ use Valitron\Validator;
  */
 class HttpClient
 {
-    const HTTP_NO_CONTENT = 204;
-    const CLIENT_VERSION = '3.0.2';
-    const MIN_PHP_VERSION = 50600;
+    const GET_REQUEST = 'GET';
+    const POST_REQUEST = 'POST';
     /**
      * @var string
      */
@@ -29,7 +28,7 @@ class HttpClient
     /**
      * @var array
      */
-    protected $hRequestVerbs = ['GET' => 'query', 'POST' => 'form_params'];
+    protected $hRequestVerbs = [self::GET_REQUEST => 'query', self::POST_REQUEST => 'form_params'];
 
     /**
      * @var int
@@ -57,7 +56,7 @@ class HttpClient
         $this->endpoint = $endpoint;
         $this->hAuthentication = $hAuthentication;
     
-        $this->addUserAgentString('CamooSms/ApiClient/' . static::CLIENT_VERSION);
+        $this->addUserAgentString('CamooSms/ApiClient/' . Constants::CLIENT_VERSION);
         $this->addUserAgentString($this->getPhpVersion());
 
         if (!is_int($timeout) || $timeout < 0) {
@@ -107,7 +106,7 @@ class HttpClient
      */
     public function performRequest($method, $data = array())
     {
-        if (PHP_VERSION_ID < static::MIN_PHP_VERSION) {
+        if (PHP_VERSION_ID < Constants::MIN_PHP_VERSION) {
                trigger_error("Your PHP-Version belongs to a release that is no longer supported. You should upgrade your PHP version as soon as possible, as it may be exposed to unpatched security vulnerabilities.", E_USER_ERROR);
         }
         // Build the post data

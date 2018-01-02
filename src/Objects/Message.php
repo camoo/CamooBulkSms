@@ -77,6 +77,8 @@ final class Message extends Base
         $oValidator
             ->rule('in', 'datacoding', ['plain','text','unicode', 'auto']);
         $this->isPossibleNumber($oValidator, 'to');
+        $this->isValidUTF8Encoded($oValidator, 'from');
+        $this->isValidUTF8Encoded($oValidator, 'message');
         return $oValidator;
     }
 
@@ -86,25 +88,5 @@ final class Message extends Base
             ->rule('required', ['id']);
         $this->notBlankRule($oValidator, 'id');
         return $oValidator;
-    }
-
-    private function isPossibleNumber(&$oValidator, $sParam)
-    {
-        $oValidator
-            ->rule(function ($field, $value, $params, $fields) {
-                $asTo = explode(',', $value);
-                if (empty($value)) {
-                    return false;
-                }
-
-                foreach ($asTo as $sTo) {
-                    $xTel = preg_replace('/[^\dxX]/', '', $sTo);
-                     $xTel = ltrim($xTel, '0');
-                    if (!is_numeric($xTel) || mb_strlen($xTel) <= 10 || mb_strlen($xTel) > 15) {
-                        return false;
-                    }
-                }
-                    return true;
-            }, $sParam)->message("{field} no (correct) phone number found!");
     }
 }

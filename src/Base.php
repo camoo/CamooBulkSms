@@ -10,7 +10,6 @@ use Camoo\Sms\Exception\CamooSmsException;
 class Base
 {
 
-    const DS = '/';
     protected $sEndPoint = 'https://api.camoo.cm';
     
     protected static $_dataObject = null;
@@ -45,7 +44,7 @@ class Base
      */
     public static function create()
     {
-        $sConfigFile = dirname(__DIR__) . static::DS.'config'.static::DS.'app.php';
+        $sConfigFile = dirname(__DIR__) . Constants::DS.'config'.Constants::DS.'app.php';
         if (!file_exists($sConfigFile)) {
             throw new CamooSmsException(['config' => 'config/app.php is missing!']);
         }
@@ -135,10 +134,10 @@ class Base
       **/
     public function getEndPointUrl()
     {
-        $sUrlTmp = $this->sEndPoint.static::DS.$this->camooClassicApiVersion.static::DS;
+        $sUrlTmp = $this->sEndPoint.Constants::DS.$this->camooClassicApiVersion.Constants::DS;
         $sResource = '';
         if ($this->getResourceName() !== null && $this->getResourceName() !== 'sms') {
-            $sResource = static::DS.$this->getResourceName();
+            $sResource = Constants::DS.$this->getResourceName();
         }
         $response_format = !empty(static::$_ahConfigs['App']['response_format'])? static::$_ahConfigs['App']['response_format'] : 'json';
         return sprintf($sUrlTmp.'sms'.$sResource.'%s', '.' . $response_format);
@@ -146,6 +145,8 @@ class Base
     
     /**
      * decode camoo response string
+     *
+     * @param $sBody
      * @throw CamooSmsException
      * @author Epiphane Tchabom
      */
@@ -183,5 +184,25 @@ class Base
             return $e->getMessage();
         }
         return $xData;
+    }
+
+    /**
+     * Execute request with credentials
+     *
+     * @param $sRequestType
+     * @param $bWithData
+     * @param $sDataName
+     *
+     * @return mixed
+     * @author Epiphane Tchabom
+     */
+    protected function execRequest($sRequestType, $bWithData = true, $sDataName = null)
+    {
+        $oHttpClient = new HttpClient($this->getEndPointUrl(), $this->getCredentials());
+        $data=[];
+        if ($bWithData === true) {
+            $data = is_null($sDataName)? $this->getData() : $this->getData($sDataName);
+        }
+        return $this->decode($oHttpClient->performRequest($sRequestType, $data));
     }
 }

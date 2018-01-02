@@ -24,8 +24,6 @@ use Camoo\Sms\Exception\CamooSmsException;
 
 class Balance extends Base
 {
-    const RESOURCE_BALANCE = 'balance';
-    const RESOURCE_ADD = 'topup';
 
     /**
     * read the current user balance
@@ -34,9 +32,8 @@ class Balance extends Base
     public function get()
     {
         try {
-            $this->setResourceName(static::RESOURCE_BALANCE);
-            $oHttpClient = new HttpClient($this->getEndPointUrl(), $this->getCredentials());
-            return $this->decode($oHttpClient->performRequest('GET'));
+            $this->setResourceName(Constants::RESOURCE_BALANCE);
+            return $this->execRequest(HttpClient::GET_REQUEST, false);
         } catch (CamooSmsException $err) {
             throw new CamooSmsException('Balance Request can not be performed!');
         }
@@ -51,9 +48,8 @@ class Balance extends Base
     public function add()
     {
         try {
-            $this->setResourceName(static::RESOURCE_ADD);
-            $oHttpClient = new HttpClient($this->getEndPointUrl(), $this->getCredentials());
-            return $this->decode($oHttpClient->performRequest('POST', $this->getData()));
+            $this->setResourceName(Constants::RESOURCE_ADD);
+            return $this->execRequest(HttpClient::POST_REQUEST);
         } catch (CamooSmsException $err) {
             throw new CamooSmsException('Topup Request can not be performed!');
         }

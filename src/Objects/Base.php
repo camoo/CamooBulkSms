@@ -67,6 +67,17 @@ class Base
             }, $sParam)->message("{field} is not carried by MTN Cameroon");
     }
 
+    public function isValidUTF8Encoded(&$oValidator, $sParam)
+    {
+        $oValidator
+            ->rule(function ($field, $value, $params, $fields) {
+                if (is_null($value) || empty($value)) {
+                    return false;
+                }
+                return mb_check_encoding($value, 'UTF-8');
+            }, $sParam)->message("{field} needs to be a valid UTF-8 encoded string");
+    }
+
     public function notBlankRule(&$oValidator, $sParam)
     {
         $oValidator
@@ -94,12 +105,12 @@ class Base
 
         if (preg_match('/[a-zA-Z]/', $inp)) {
             // Alphanumeric format so make sure it's < 11 chars
-            $ret = substr($ret, 0, 11);
+            $ret = mb_substr($ret, 0, 11);
         } else {
             // Numerical, remove any prepending '00'
-            if (substr($ret, 0, 2) == '00') {
-                $ret = substr($ret, 2);
-                $ret = substr($ret, 0, 15);
+            if (mb_substr($ret, 0, 2) == '00') {
+                $ret = ltrim($ret, 0);
+                $ret = mb_substr($ret, 0, 15);
             }
         }
 
@@ -117,5 +128,25 @@ class Base
             return (boolean) preg_match('/^(67|650|651|652|653|654|683|680|681|682)\s*/', $xTel);
         }
         return false;
+    }
+
+    public function isPossibleNumber(&$oValidator, $sParam)
+    {
+        $oValidator
+            ->rule(function ($field, $value, $params, $fields) {
+                $asTo = explode(',', $value);
+                if (empty($value)) {
+                    return false;
+                }
+
+                foreach ($asTo as $sTo) {
+                    $xTel = preg_replace('/[^\dxX]/', '', $sTo);
+                    $xTel = ltrim($xTel, '0');
+                    if (!is_numeric($xTel) || mb_strlen($xTel) <= 10 || mb_strlen($xTel) > 15) {
+                        return false;
+                    }
+                }
+                    return true;
+            }, $sParam)->message("{field} no (correct) phone number found!");
     }
 }
