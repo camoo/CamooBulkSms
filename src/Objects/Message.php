@@ -99,11 +99,12 @@ final class Message extends Base
 
                 foreach ($asTo as $sTo) {
                     $xTel = preg_replace('/[^\dxX]/', '', $sTo);
+                     $xTel = ltrim($xTel, '0');
                     if (!is_numeric($xTel) || mb_strlen($xTel) <= 10 || mb_strlen($xTel) > 15) {
                         return false;
                     }
                 }
                     return true;
-            }, $sParam)->message("{field} or or more number are not valid!");
+            }, $sParam)->message("{field} no (correct) phone number found!");
     }
 }
