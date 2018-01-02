@@ -40,7 +40,7 @@ Quick Examples
 
 1) Sending a SMS
 ```php
-	$oMessage = \Camoo\Sms\Message();
+	$oMessage = \Camoo\Sms\Message::create();
 	$oMessage->from ='YourCompany';
 	$oMessage->to = '+237612345678';
 	$oMessage->datacoding ='auto'; // possible values: plain,text,unicode or auto
@@ -53,7 +53,7 @@ Quick Examples
             
             - Per request, a max of 50 recipients can be entered.
 ```php
-	$oMessage = \Camoo\Sms\Message();
+	$oMessage = \Camoo\Sms\Message:create();
 	$oMessage->from ='YourCompany';
 	$oMessage->to =['+237612345678', '+237612345679', '+237612345610', '+33689764530'];
 	$oMessage->datacoding ='auto';
