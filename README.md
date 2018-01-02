@@ -25,7 +25,7 @@ composer require camoo/sms
 
 And download the full version
 
-### Edit config/app.php
+###### Edit sr/config/app.php
 ```php
 	return [
 	   'App' => [
@@ -37,8 +37,9 @@ And download the full version
   ```
 
 Quick Examples
+--------------
 
-1) Sending a SMS
+# Sending a SMS
 ```php
 	$oMessage = \Camoo\Sms\Message::create();
 	$oMessage->from ='YourCompany';
@@ -49,7 +50,7 @@ Quick Examples
 
 	var_dump($oMessage->send());
   ```
-2)  Send the same SMS to many recipients
+# Send the same SMS to many recipients
             
             - Per request, a max of 50 recipients can be entered.
 ```php
@@ -67,11 +68,10 @@ Most Frequent Issues
 
 Sending a message returns false.
 
-    This is usually due to your webserver unable to send a request to CAMOO. Make sure the following are met:
+	This is usually due to your webserver unable to send a request to CAMOO. Make sure the following are met:
 
-  1) Either CURL is enabled for your PHP installation or the PHP option 'allow_url_fopen' is set to 1 (default).
-
-  2) You have no firewalls blocking access on port 443.
+  		Either CURL is enabled for your PHP installation or the PHP option 'allow_url_fopen' is set to 1 (default).
+		You have no firewalls blocking access on port 443.
    
 Your message appears to have been sent but you do not recieve it.
 
