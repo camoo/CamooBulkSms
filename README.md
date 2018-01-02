@@ -39,7 +39,7 @@ And download the full version
 Quick Examples
 --------------
 
-###### Sending a SMS
+##### Sending a SMS
 ```php
 	$oMessage = \Camoo\Sms\Message::create();
 	$oMessage->from ='YourCompany';
@@ -50,7 +50,7 @@ Quick Examples
 
 	var_dump($oMessage->send());
   ```
-###### Send the same SMS to many recipients
+##### Send the same SMS to many recipients
             
 	- Per request, a max of 50 recipients can be entered.
 ```php
@@ -66,7 +66,7 @@ Quick Examples
 Most Frequent Issues
 --------------------
 
-##### Sending a message returns timeout.
+##### Sending a message returns timeout error.
 
 This is usually due to your webserver unable to send a request to CAMOO. Make sure the following are met:
 
