@@ -33,7 +33,7 @@ class HttpClient
     /**
      * @var int
      */
-    private $timeout = 10;
+    private $timeout = Constants::CLIENT_TIMEOUT;
     
     /**
     * @var mixed
@@ -51,13 +51,13 @@ class HttpClient
      *
      * @throws \HttpClientException if timeout settings are invalid
      */
-    public function __construct($endpoint, $hAuthentication, $timeout = 10)
+    public function __construct($endpoint, $hAuthentication, $timeout = 0)
     {
         $this->endpoint = $endpoint;
         $this->hAuthentication = $hAuthentication;
     
         $this->addUserAgentString('CamooSms/ApiClient/' . Constants::CLIENT_VERSION);
-        $this->addUserAgentString($this->getPhpVersion());
+        $this->addUserAgentString(Constants::getPhpVersion());
 
         if (!is_int($timeout) || $timeout < 0) {
             throw new HttpClientException(sprintf(
@@ -65,9 +65,9 @@ class HttpClient
                 is_object($timeout) ? get_class($timeout) : gettype($timeout).' '.var_export($timeout, true)
             ));
         }
-
-        $this->timeout = $timeout;
-
+        if (!empty($timeout)) {
+            $this->timeout = $timeout;
+        }
 
         if (is_null($this->oClient)) {
             $this->oClient = new Client(['timeout' => $this->timeout]);
@@ -106,9 +106,6 @@ class HttpClient
      */
     public function performRequest($method, $data = array())
     {
-        if (PHP_VERSION_ID < Constants::MIN_PHP_VERSION) {
-               trigger_error("Your PHP-Version belongs to a release that is no longer supported. You should upgrade your PHP version as soon as possible, as it may be exposed to unpatched security vulnerabilities.", E_USER_ERROR);
-        }
         // Build the post data
         $data = array_merge($data, $this->hAuthentication);
         $data['user_agent'] = implode(' ', $this->userAgent);
@@ -135,17 +132,5 @@ class HttpClient
                 throw new HttpClientException(Psr7\str($e->getResponse()));
             }
         }
-    }
-    
-     /**
-     * @return string
-     */
-    private function getPhpVersion()
-    {
-        if (!defined('PHP_VERSION_ID')) {
-            $version = explode('.', PHP_VERSION);
-            define('PHP_VERSION_ID', $version[0] * 10000 + $version[1] * 100 + $version[2]);
-        }
-        return 'PHP/' . PHP_VERSION_ID;
     }
 }

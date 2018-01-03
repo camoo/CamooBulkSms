@@ -16,7 +16,7 @@ namespace Camoo\Sms;
  */
 
 /**
- * Class Camoo\Sms\Message handles the methods and properties of sending an SMS message.
+ * Class Camoo\Sms\Message handles the methods and properties of sending a SMS message.
  *
  */
 use Camoo\Sms\Exception\CamooSmsException;
@@ -27,6 +27,7 @@ class Message extends Base
     /**
      * Send Message
      *
+     * @throws Exception\CamooSmsException
      */
     public function send()
     {
@@ -37,11 +38,12 @@ class Message extends Base
         }
     }
    
-    /**
-    * view a sent message
-    *
-    * @return mixed Message
-    */
+     /**
+     * view a sent message
+     *
+     * @throws Exception\CamooSmsException
+     * @return mixed Message
+     */
     public function view()
     {
         try {

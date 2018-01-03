@@ -10,14 +10,14 @@ use Camoo\Sms\Exception\CamooSmsException;
 class Base
 {
 
-    protected $sEndPoint = 'https://api.camoo.cm';
+    protected $_endPoint = Constants::END_POINT_URL;
     
     protected static $_dataObject = null;
 
      /**
      * @var string The resource name as it is known at the server
      */
-    protected $resourceName = null;
+    protected $_resourceName = null;
     protected static $_credentials = [];
     protected static $_ahConfigs = [];
     protected static $_create = null;
@@ -27,7 +27,7 @@ class Base
      */
     public function setResourceName($resourceName)
     {
-        $this->resourceName = $resourceName;
+        $this->_resourceName = $resourceName;
     }
 
     /**
@@ -35,25 +35,29 @@ class Base
      */
     public function getResourceName()
     {
-        return $this->resourceName;
+        return $this->_resourceName;
     }
 
     /**
      * @return Objects
      * @throws Exception\CamooSmsException
      */
-    public static function create()
+    public static function create($api_key = null, $api_secret = null)
     {
         $sConfigFile = dirname(__DIR__) . Constants::DS.'config'.Constants::DS.'app.php';
         if (!file_exists($sConfigFile)) {
             throw new CamooSmsException(['config' => 'config/app.php is missing!']);
         }
+
         static::$_ahConfigs = (require $sConfigFile);
         static::$_credentials = static::$_ahConfigs['App'];
+        if (empty(static::$_ahConfigs['local_login'])) {
+            static::$_credentials = array_merge(static::$_ahConfigs['App'], array_combine(Constants::$asCredentialKeyWords, [$api_key, $api_secret]));
+        }
         $sClass = get_called_class();
         $asCaller = explode('\\', $sClass);
         $sCaller  = array_pop($asCaller);
-        $sObjecClass = '\\Camoo\\Sms\\Objects\\'.$sCaller;
+        $sObjecClass = Constants::APP_NAMESPACE.'Objects\\'.$sCaller;
         if (class_exists($sObjecClass)) {
              static::$_dataObject = new $sObjecClass();
         }
@@ -116,6 +120,12 @@ class Base
         return $this;
     }
 
+    /**
+     * Returns payload for a request
+     *
+     * @param $sValidator
+     * @return Array
+     */
     public function getData($sValidator = 'default')
     {
         try {
@@ -128,13 +138,13 @@ class Base
 
      /**
       * Returns the CAMOO API URL
-      *-
+      *
       * @return string
       * @author Epiphane Tchabom
       **/
     public function getEndPointUrl()
     {
-        $sUrlTmp = $this->sEndPoint.Constants::DS.$this->camooClassicApiVersion.Constants::DS;
+        $sUrlTmp = $this->_endPoint.Constants::DS.$this->camooClassicApiVersion.Constants::DS;
         $sResource = '';
         if ($this->getResourceName() !== null && $this->getResourceName() !== 'sms') {
             $sResource = Constants::DS.$this->getResourceName();
@@ -160,6 +170,15 @@ class Base
         }
     }
 
+    /**
+     * decodes response json string
+     *
+     * @param $sBody
+     * @param $bAsHash
+     *
+     * @throw CamooSmsException
+     * @return object | Array
+     */
     private function decodeJson($sBody, $bAsHash = false)
     {
         try {
@@ -173,6 +192,14 @@ class Base
         return $xData;
     }
 
+    /**
+     * decodes response xml string
+     *
+     * @param $sBody
+     *
+     * @throw CamooSmsException
+     * @return string (xml)
+     */
     private function decodeXml($sBody)
     {
         try {
@@ -191,17 +218,17 @@ class Base
      *
      * @param $sRequestType
      * @param $bWithData
-     * @param $sDataName
+     * @param $sObjectValidator
      *
      * @return mixed
      * @author Epiphane Tchabom
      */
-    protected function execRequest($sRequestType, $bWithData = true, $sDataName = null)
+    protected function execRequest($sRequestType, $bWithData = true, $sObjectValidator = null)
     {
         $oHttpClient = new HttpClient($this->getEndPointUrl(), $this->getCredentials());
-        $data=[];
+        $data = [];
         if ($bWithData === true) {
-            $data = is_null($sDataName)? $this->getData() : $this->getData($sDataName);
+            $data = is_null($sObjectValidator)? $this->getData() : $this->getData($sObjectValidator);
         }
         return $this->decode($oHttpClient->performRequest($sRequestType, $data));
     }

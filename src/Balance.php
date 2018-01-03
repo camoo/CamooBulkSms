@@ -27,6 +27,8 @@ class Balance extends Base
 
     /**
     * read the current user balance
+    *
+    * @throws Exception\CamooSmsException
     * @return mixed Balance
     */
     public function get()
@@ -43,6 +45,7 @@ class Balance extends Base
     * Initiate a topup to recharge a user account
     * Only available for MTN Mobile Money Cameroon
     *
+    * @throws Exception\CamooSmsException
     * @return mixed Trx
     */
     public function add()
