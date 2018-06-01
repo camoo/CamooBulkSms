@@ -21,7 +21,7 @@ composer require camoo/sms
 ```
 ### Or go to
 
-   [Camoo-SMS-API-Latest Release](https://github.com/camoo/sms/releases/tag/v3.0.4)
+   [Camoo-SMS-API-Latest Release](https://github.com/camoo/sms/releases/tag/v3.0.5)
 
 And download the full version
 
@@ -46,7 +46,7 @@ Quick Examples
 
 ##### Sending a SMS
 ```php
-	#$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET'); // in case local_login is false
+	#$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET'); // in case local_login is false or config/app is missing
 	$oMessage = \Camoo\Sms\Message::create();
 	$oMessage->from ='YourCompany';
 	$oMessage->to = '+237612345678';
@@ -60,7 +60,7 @@ Quick Examples
             
 	- Per request, a max of 50 recipients can be entered.
 ```php
-	#$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET'); // in case local_login is false
+	#$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET'); // in case local_login is false or config/app.php is missing
 	$oMessage = \Camoo\Sms\Message:create();
 	$oMessage->from ='YourCompany';
 	$oMessage->to =['+237612345678', '+237612345679', '+237612345610', '+33689764530'];
