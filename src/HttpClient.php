@@ -113,7 +113,7 @@ class HttpClient
     // VALIDATE REQUEST
         $sMethod = strtoupper($method);
         $oValidator = new Validator(array_merge(['request' => $sMethod], $data));
-        if (empty($this->ValidatorDefault($oValidator))) {
+        if (empty($this->validatorDefault($oValidator))) {
             throw new HttpClientException('Request not allowed!');
         }
 

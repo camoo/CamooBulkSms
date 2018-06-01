@@ -10,16 +10,24 @@ use Camoo\Sms\Exception\CamooSmsException;
 class Base
 {
 
+   /*@ var string API endpoint */
     protected $_endPoint = Constants::END_POINT_URL;
     
+   /*@ var object ressource */
     protected static $_dataObject = null;
 
      /**
      * @var string The resource name as it is known at the server
      */
     protected $_resourceName = null;
+
+   /* @var mixed credentials */
     protected static $_credentials = [];
+
+    /* @var mixed configs*/
     protected static $_ahConfigs = [];
+
+   /* @var object instance*/
     protected static $_create = null;
 
     /**
@@ -45,13 +53,16 @@ class Base
     public static function create($api_key = null, $api_secret = null)
     {
         $sConfigFile = dirname(__DIR__) . Constants::DS.'config'.Constants::DS.'app.php';
-        if (!file_exists($sConfigFile)) {
+        if ((null === $api_key || null === $api_secret) && !file_exists($sConfigFile)) {
             throw new CamooSmsException(['config' => 'config/app.php is missing!']);
         }
+        if (file_exists($sConfigFile)) {
+              static::$_ahConfigs = (require $sConfigFile);
+              static::$_credentials = static::$_ahConfigs['App'];
+        }
 
-        static::$_ahConfigs = (require $sConfigFile);
-        static::$_credentials = static::$_ahConfigs['App'];
-        if (empty(static::$_ahConfigs['local_login'])) {
+        if ((null !== $api_key && null !== $api_secret) || empty(static::$_ahConfigs['local_login'])) {
+            static::$_ahConfigs = ['local_login' => false, 'App' => ['response_format' => 'json']];
             static::$_credentials = array_merge(static::$_ahConfigs['App'], array_combine(Constants::$asCredentialKeyWords, [$api_key, $api_secret]));
         }
         $sClass = get_called_class();
@@ -94,7 +105,6 @@ class Base
     public function getCredentials()
     {
         return self::$_credentials;
-        ;
     }
 
      /**
@@ -164,7 +174,7 @@ class Base
     {
         try {
             $sDecoder = 'decode' .ucfirst(static::$_ahConfigs['App']['response_format']);
-            return $this->$sDecoder($sBody);
+            return $this->{$sDecoder}($sBody);
         } catch (CamooSmsException $e) {
             return $e->getMessage();
         }
