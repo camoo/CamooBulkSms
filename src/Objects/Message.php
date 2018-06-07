@@ -60,6 +60,13 @@ final class Message extends Base
     public $datacoding = null;
 
     /**
+     * The SMS route that is used to send the message, can be premium, classic. Default: premium
+     *
+     * @var string
+     */
+    public $route = null;
+
+    /**
      * The type of message. Values can be: sms, binary or flash
      *
      * @var string
@@ -76,6 +83,8 @@ final class Message extends Base
             ->rule('in', 'type', ['sms','binary','flash']);
         $oValidator
             ->rule('in', 'datacoding', ['plain','text','unicode', 'auto']);
+        $oValidator
+            ->rule('in', 'route', ['premium','classic']);
         $this->isPossibleNumber($oValidator, 'to');
         $this->isValidUTF8Encoded($oValidator, 'from');
         $this->isValidUTF8Encoded($oValidator, 'message');
