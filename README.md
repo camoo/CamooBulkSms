@@ -36,7 +36,7 @@ Quick Examples
 	$oMessage->datacoding ='auto'; // possible values: plain,text,unicode or auto
 	$oMessage->type ='sms';
 	$oMessage->message ='Hello Kmer World! Déjà vu!';
-    $oMessage->encrypt = true; //Encrypt message before sending.
+    	$oMessage->encrypt = true; //Encrypt message before sending.
 
 	var_dump($oMessage->send());
   ```
