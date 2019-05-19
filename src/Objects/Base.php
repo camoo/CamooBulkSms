@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Camoo\Sms\Objects;
 
 use Valitron\Validator;
@@ -20,9 +21,9 @@ class Base
         return static::$_create;
     }
 
-    public function set($sProperty, $value, $oClass = null)
+    public function set(string $sProperty, $value, $oClass = null)
     {
-        if (is_null($oClass)) {
+        if ($oClass === null ) {
             return;
         }
         if (!property_exists($oClass, $sProperty)) {
@@ -54,7 +55,7 @@ class Base
         return array_filter($hPayload);
     }
 
-    public function isMTNCameroon(&$oValidator, $sParam)
+    public function isMTNCameroon(&$oValidator, string $sParam) : bool
     {
         $oValidator
             ->rule(function ($field, $value, $params, $fields) {
@@ -67,7 +68,7 @@ class Base
             }, $sParam)->message("{field} is not carried by MTN Cameroon");
     }
 
-    public function isValidUTF8Encoded(&$oValidator, $sParam)
+    public function isValidUTF8Encoded(&$oValidator, string $sParam)
     {
         $oValidator
             ->rule(function ($field, $value, $params, $fields) {
@@ -76,9 +77,10 @@ class Base
                 }
                 return mb_check_encoding($value, 'UTF-8');
             }, $sParam)->message("{field} needs to be a valid UTF-8 encoded string");
+        return true;
     }
 
-    public function notBlankRule(&$oValidator, $sParam)
+    public function notBlankRule(&$oValidator, string $sParam)
     {
         $oValidator
             ->rule(function ($field, $value, $params, $fields) {
@@ -98,7 +100,7 @@ class Base
      * whilst stinging you with the financial cost! While this cannot correct them, it
      * will try its best to correctly format them.
      */
-    private function clearOriginator($inp)
+    private function clearOriginator(string $inp) : string
     {
         // Remove any invalid characters
         $ret = preg_replace('/[^a-zA-Z0-9]/', '', (string)$inp);
@@ -117,12 +119,12 @@ class Base
         return (string)$ret;
     }
 
-    private function isCmMobile($xTel)
+    private function isCmMobile(string $xTel) : bool
     {
         return (boolean) preg_match('/(?=^6).{9}$/', preg_replace('/[^\dxX]/', '', $xTel));
     }
 
-    private function isCmMTN($xTel)
+    private function isCmMTN(string $xTel) : bool
     {
         if ($this->isCmMobile($xTel)) {
             return (boolean) preg_match('/^(67|650|651|652|653|654|683|680|681|682)\s*/', $xTel);
@@ -130,7 +132,7 @@ class Base
         return false;
     }
 
-    public function isPossibleNumber(&$oValidator, $sParam)
+    public function isPossibleNumber(&$oValidator, string $sParam)
     {
         $oValidator
             ->rule(function ($field, $value, $params, $fields) {

@@ -21,38 +21,22 @@ composer require camoo/sms
 ```
 ### Or go to
 
-   [Camoo-SMS-API-Latest Release](https://gitlab.com/camoo/sms/releases/tag/v3.0.5)
+   [Camoo-SMS-API-Latest Release](https://github.com/camoo/sms/releases/tag/v3.1.0)
 
 And download the full version
-
-###### Edit sr/config/app.php
-```php
-	return [
-	   'local_login' => true,
-	   'App' => [
-	      'api_key' => '592595095', // add your api_key
-	      'api_secret' => '79b89479847b9798479494984', // add your api_secret
-	      'response_format' => 'json',// json or xml
-	    ]
-	];
-  ```
-
-###### OPTION `local_login`,
-	`true` : The API should use the credentials from the file app.php
-	`false` : You want to pass your credentials on the fly for each request
 
 Quick Examples
 --------------
 
 ##### Sending a SMS
 ```php
-	#$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET'); // in case local_login is false or config/app is missing
-	$oMessage = \Camoo\Sms\Message::create();
+	#$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
 	$oMessage->from ='YourCompany';
 	$oMessage->to = '+237612345678';
 	$oMessage->datacoding ='auto'; // possible values: plain,text,unicode or auto
 	$oMessage->type ='sms';
 	$oMessage->message ='Hello Kmer World! Déjà vu!';
+    $oMessage->encrypt = true; //Encrypt message before sending.
 
 	var_dump($oMessage->send());
   ```
@@ -60,8 +44,7 @@ Quick Examples
             
 	- Per request, a max of 50 recipients can be entered.
 ```php
-	#$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET'); // in case local_login is false or config/app.php is missing
-	$oMessage = \Camoo\Sms\Message:create();
+	$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
 	$oMessage->from ='YourCompany';
 	$oMessage->to =['+237612345678', '+237612345679', '+237612345610', '+33689764530'];
 	$oMessage->datacoding ='auto';
@@ -74,5 +57,5 @@ Quick Examples
 Resources
 ---------
 
-  * [Documentation](https://gitlab.com/camoo/sms/wikis)
-  * [Report issues](https://gitlab.com/camoo/sms/issues)
+  * [Documentation](https://github.com/camoo/sms/wiki)
+  * [Report issues](https://github.com/camoo/sms/issues)

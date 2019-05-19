@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Camoo\Sms;
 
 /**
@@ -7,7 +8,7 @@ namespace Camoo\Sms;
  */
 class Constants
 {
-    const CLIENT_VERSION = '3.0.4';
+    const CLIENT_VERSION = '3.1.0';
     const CLIENT_TIMEOUT = 10; // 10 sec
     const MIN_PHP_VERSION = 50600;
     const DS = '/';
@@ -23,7 +24,7 @@ class Constants
      /**
      * @return string
      */
-    public static function getPhpVersion()
+    public static function getPhpVersion() : string
     {
         if (!defined('PHP_VERSION_ID')) {
             $version = explode('.', PHP_VERSION);

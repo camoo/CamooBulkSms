@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Camoo\Sms;
 
 use Camoo\Sms\Exception\CamooSmsException;
@@ -9,7 +10,6 @@ use Camoo\Sms\Exception\CamooSmsException;
  */
 class Base
 {
-
    /*@ var string API endpoint */
     protected $_endPoint = Constants::END_POINT_URL;
     
@@ -33,7 +33,7 @@ class Base
     /**
      * @param $resourceName
      */
-    public function setResourceName($resourceName)
+    public function setResourceName(string $resourceName)
     {
         $this->_resourceName = $resourceName;
     }
@@ -41,7 +41,7 @@ class Base
     /**
      * @return string
      */
-    public function getResourceName()
+    public function getResourceName() : ?string
     {
         return $this->_resourceName;
     }
@@ -94,7 +94,7 @@ class Base
     /**
      * @return array
      */
-    public function getConfigs()
+    public function getConfigs() : array
     {
         return self::$_ahConfigs;
     }
@@ -102,7 +102,7 @@ class Base
     /**
      * @return array
      */
-    public function getCredentials()
+    public function getCredentials() : array
     {
         return self::$_credentials;
     }
@@ -136,13 +136,13 @@ class Base
      * @param $sValidator
      * @return Array
      */
-    public function getData($sValidator = 'default')
+    public function getData(?string $sValidator = 'default') : array
     {
         try {
             return Objects\Base::create()->get($this->getDataObject(), $sValidator);
         } catch (CamooSmsException $err) {
-            echo $err->getMessage();
-            die;
+            trigger_error($err->getMessage(), E_USER_ERROR);
+            return [];
         }
     }
 
@@ -152,7 +152,7 @@ class Base
       * @return string
       * @author Epiphane Tchabom
       **/
-    public function getEndPointUrl()
+    public function getEndPointUrl() : string
     {
         $sUrlTmp = $this->_endPoint.Constants::DS.$this->camooClassicApiVersion.Constants::DS;
         $sResource = '';
@@ -189,10 +189,10 @@ class Base
      * @throw CamooSmsException
      * @return object | Array
      */
-    private function decodeJson($sBody, $bAsHash = false)
+    private function decodeJson(string $sBody)
     {
         try {
-            if (($xData = json_decode($sBody, $bAsHash)) === null
+            if (($xData = json_decode($sBody)) === null
                     && (json_last_error() !== JSON_ERROR_NONE) ) {
                 throw new CamooSmsException(json_last_error_msg());
             }
@@ -210,7 +210,7 @@ class Base
      * @throw CamooSmsException
      * @return string (xml)
      */
-    private function decodeXml($sBody)
+    private function decodeXml(string $sBody) : string
     {
         try {
             $oXML = new \SimpleXMLElement($sBody);
@@ -233,13 +233,42 @@ class Base
      * @return mixed
      * @author Epiphane Tchabom
      */
-    protected function execRequest($sRequestType, $bWithData = true, $sObjectValidator = null)
+    protected function execRequest(string $sRequestType, $bWithData = true, $sObjectValidator = null)
     {
         $oHttpClient = new HttpClient($this->getEndPointUrl(), $this->getCredentials());
         $data = [];
         if ($bWithData === true) {
-            $data = is_null($sObjectValidator)? $this->getData() : $this->getData($sObjectValidator);
+            $data = null === $sObjectValidator? $this->getData() : $this->getData($sObjectValidator);
+            $oClassObj = $this->getDataObject();
+            if (is_object($oClassObj) && $oClassObj instanceof \Camoo\Sms\Objects\Message && array_key_exists('message', $data) && $oClassObj->encrypt === true) {
+                $data['message'] = $this->encryptMsg($data['message']);
+            }
+        }
+        if (array_key_exists('encrypt', $data)) {
+            unset($data['encrypt']);
         }
         return $this->decode($oHttpClient->performRequest($sRequestType, $data));
+    }
+
+    /**
+     * Encrypt message using PGP
+     *
+     * @param string $sMessage
+     * @return string encrpted $sMessage
+     */
+    protected function encryptMsg(string $sMessage) : string
+    {
+        $sPubFile = dirname(__DIR__) . Constants::DS.'config'.Constants::DS.'keys' . Constants::DS . 'cert.pem';
+        if (!file_exists($sPubFile) || ($sContent = file_get_contents($sPubFile)) === false ) {
+            return $sMessage;
+        }
+        try {
+            $oPGP = new \nicoSWD\GPG\GPG();
+            $sPubKey = new \nicoSWD\GPG\PublicKey($sContent);
+            return $oPGP->encrypt($sPubKey, $sMessage);
+        } catch( CamooSmsException $err) {
+            trigger_error($err->getMessage(), E_USER_ERROR);
+            return $sMessage;
+        }
     }
 }

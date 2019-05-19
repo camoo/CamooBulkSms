@@ -1,6 +1,6 @@
 <?php
+declare(strict_types=1);
 namespace Camoo\Sms\Objects;
-
 /**
  *
  * CAMOO SARL: http://www.camoo.cm
@@ -43,12 +43,11 @@ final class Message extends Base
      */
     public $message = null;
 
-
     /**
      * Recipient that sould receive the sms
      * You can set single recipient (string) or multiple recipients by using array
      *
-     * @var string | array
+     * @var string | Array
      */
     public $to = null;
 
@@ -61,37 +60,47 @@ final class Message extends Base
 
     /**
      * The SMS route that is used to send the message, can be premium, classic. Default: premium
+     * This optional parameter works only for cameroonian mobile phone numbers.
      *
      * @var string
      */
     public $route = null;
 
     /**
-     * The type of message. Values can be: sms, binary or flash
+     * The type of message. Values can be: sms, binary or flash . Default: sms
      *
      * @var string
      */
     public $type = null;
 
-    public function validatorDefault(Validator $oValidator)
+    /**
+     * Encrypt message before sending. Highly recommended if you are sending SMS for two factor authentication. Default : false
+     *
+     * @var boolean
+     */
+    public $encrypt = false;
+
+    public function validatorDefault(Validator $oValidator) : Validator
     {
         $oValidator
             ->rule('required', ['from', 'message', 'to']);
         $oValidator
-            ->rule('optional', ['type', 'datacoding']);
+            ->rule('optional', ['type', 'datacoding','route', 'encrypt']);
         $oValidator
             ->rule('in', 'type', ['sms','binary','flash']);
         $oValidator
             ->rule('in', 'datacoding', ['plain','text','unicode', 'auto']);
         $oValidator
             ->rule('in', 'route', ['premium','classic']);
+        $oValidator
+            ->rule('boolean', 'encrypt');
         $this->isPossibleNumber($oValidator, 'to');
         $this->isValidUTF8Encoded($oValidator, 'from');
         $this->isValidUTF8Encoded($oValidator, 'message');
         return $oValidator;
     }
 
-    public function validatorView(Validator $oValidator)
+    public function validatorView(Validator $oValidator) : Validator
     {
         $oValidator
             ->rule('required', ['id']);

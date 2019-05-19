@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Camoo\Sms;
 
 use Camoo\Sms\Exception\HttpClientException;
@@ -69,7 +70,7 @@ class HttpClient
             $this->timeout = $timeout;
         }
 
-        if (is_null($this->oClient)) {
+        if ($this->oClient === null) {
             $this->oClient = new Client(['timeout' => $this->timeout]);
         }
     }
@@ -81,7 +82,7 @@ class HttpClient
      *
      * @return boolean
      */
-    private function validatorDefault(Validator $oValidator)
+    private function validatorDefault(Validator $oValidator) : bool
     {
         $oValidator->rule('required', ['api_key', 'api_secret', 'response_format']);
         $oValidator->rule('in', 'response_format', ['json', 'xml']);
@@ -91,7 +92,7 @@ class HttpClient
     /**
      * @param string $userAgent
      */
-    public function addUserAgentString($userAgent)
+    public function addUserAgentString(string $userAgent)
     {
         $this->userAgent[] = $userAgent;
     }
@@ -110,20 +111,20 @@ class HttpClient
         $data = array_merge($data, $this->hAuthentication);
         $data['user_agent'] = implode(' ', $this->userAgent);
 
-    // VALIDATE REQUEST
+        //VALIDATE REQUEST
         $sMethod = strtoupper($method);
         $oValidator = new Validator(array_merge(['request' => $sMethod], $data));
         if (empty($this->validatorDefault($oValidator))) {
             throw new HttpClientException('Request not allowed!');
         }
 
-    //  UNSET REQUEST FORMAT
+        //UNSET REQUEST FORMAT
         unset($data['response_format']);
 
         try {
             $oResponse = $this->oClient->request($sMethod, $this->endpoint, [$this->hRequestVerbs[$sMethod] => $data]);
             if ($oResponse->getStatusCode() === 200) {
-                return $oResponse->getBody();
+                return (string) $oResponse->getBody();
             }
             throw new HttpClientException();
         } catch (RequestException $e) {

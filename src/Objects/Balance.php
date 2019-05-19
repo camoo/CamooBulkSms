@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Camoo\Sms\Objects;
 
 /**
@@ -34,7 +35,7 @@ final class Balance extends Base
      */
     public $amount = null;
 
-    public function validatorDefault(Validator $oValidator)
+    public function validatorDefault(Validator $oValidator) : Validator
     {
         $oValidator
             ->rule('required', ['phonenumber', 'amount']);

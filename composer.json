@@ -3,15 +3,16 @@
     "description": "CAMOO API Packages",
     "type": "library",
     "require": {
-        "php": ">=5.6.0",
+        "php": ">=7.1.0",
         "vlucas/valitron": "^1.4",
         "guzzlehttp/guzzle": "^6.2",
-	"ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "nicoswd/php-gpg": "^1.7"
     },
-   "minimum-stability": "dev",
-   "homepage": "https://camoo.cm",
+    "minimum-stability": "dev",
+    "homepage": "https://camoo.cm",
     "license": "MIT",
-   "prefer-stable" : true,
+    "prefer-stable" : true,
     "require-dev": {
     },
     "authors": [
@@ -20,21 +21,21 @@
             "email": "sms@camoo.sarl"
         }
     ],
-    
-     "keywords" : [ 
-	"CAMOO",
-	"SMS",
-	"SMS Gateway",
-	"API-SMS"
+
+    "keywords" : [
+        "CAMOO",
+        "SMS",
+        "SMS Gateway",
+        "API-SMS"
     ],
     "autoload": {
         "psr-4": {
             "Camoo\\Sms\\": "src/"
         }
     },
-   "support": {
-        "issues": "https://gitlab.com/camoo/sms/issues",
-        "source": "https://gitlab.com/camoo/sms",
-        "wiki": "https://gitlab.com/camoo/sms/wikis"
+    "support": {
+        "issues": "https://github.com/camoo/sms/issues",
+        "source": "https://github.com/camoo/sms",
+        "wiki": "https://github.com/camoo/sms/wiki"
     }
 }
