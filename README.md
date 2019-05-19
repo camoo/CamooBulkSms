@@ -30,7 +30,7 @@ Quick Examples
 
 ##### Sending a SMS
 ```php
-	#$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
+	$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
 	$oMessage->from ='YourCompany';
 	$oMessage->to = '+237612345678';
 	$oMessage->datacoding ='auto'; // possible values: plain,text,unicode or auto
