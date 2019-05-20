@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace Camoo\Sms\Objects;
+
 /**
  *
  * CAMOO SARL: http://www.camoo.cm
@@ -74,6 +75,20 @@ final class Message extends Base
     public $type = null;
 
     /**
+     * A client reference. It might be whatever you want to identify the your message.
+     *
+     * @var string
+     */
+    public $reference = null;
+
+    /**
+     * The amount of seconds, that the message is valid. If a message is not delivered within this time, the message will be discarded. Should be greather than 30.
+     *
+     * @var integer
+     */
+    public $validity = null;
+
+    /**
      * Encrypt message before sending. Highly recommended if you are sending SMS for two factor authentication. Default : false
      *
      * @var boolean
@@ -85,7 +100,7 @@ final class Message extends Base
         $oValidator
             ->rule('required', ['from', 'message', 'to']);
         $oValidator
-            ->rule('optional', ['type', 'datacoding','route', 'encrypt']);
+            ->rule('optional', ['type', 'datacoding','route', 'encrypt','reference', 'validity']);
         $oValidator
             ->rule('in', 'type', ['sms','binary','flash']);
         $oValidator
@@ -94,7 +109,11 @@ final class Message extends Base
             ->rule('in', 'route', ['premium','classic']);
         $oValidator
             ->rule('boolean', 'encrypt');
-        $this->isPossibleNumber($oValidator, 'to');
+        $oValidator
+            ->rule('string', 'reference');
+         $oValidator
+            ->rule('integer', 'validity');
+       $this->isPossibleNumber($oValidator, 'to');
         $this->isValidUTF8Encoded($oValidator, 'from');
         $this->isValidUTF8Encoded($oValidator, 'message');
         return $oValidator;

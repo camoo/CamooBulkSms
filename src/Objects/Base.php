@@ -4,6 +4,7 @@ namespace Camoo\Sms\Objects;
 
 use Valitron\Validator;
 use Camoo\Sms\Exception\CamooSmsException;
+use Camoo\Sms\Lib\Utils;
 
 /**
  * Class Objects\Base
@@ -23,14 +24,14 @@ class Base
 
     public function set(string $sProperty, $value, $oClass = null)
     {
-        if ($oClass === null ) {
+        if ($oClass === null) {
             return;
         }
         if (!property_exists($oClass, $sProperty)) {
             throw new CamooSmsException([$sProperty => 'is not allowed!']);
         }
         if ($sProperty === 'from') {
-            $value = $this->clearOriginator($value);
+            $value = Utils::clearSender($value);
         }
         if ($sProperty === 'to') {
             $value = !is_array($value)? $value : implode(',', $value);
@@ -52,6 +53,15 @@ class Base
                 throw new CamooSmsException($oValidator->errors());
             }
         }
+        if (array_key_exists('route', $hPayload) && $hPayload['route'] === 'classic' && $oClass instanceof \Camoo\Sms\Objects\Message && array_key_exists('to', $hPayload)) {
+            $asTo = explode(',', $hPayload['to']);
+            foreach ($asTo as $sTo) {
+                if (!Utils::isValidPhoneNumber($sTo)) {
+                    throw new CamooSmsException([$sTo => 'does not seems to be a cameroonian phone number!']);
+                }
+            }
+        }
+
         return array_filter($hPayload);
     }
 
@@ -64,7 +74,7 @@ class Base
                 } elseif (is_string($value) && trim($value) === '') {
                     return false;
                 }
-                    return $this->isCmMTN($value);
+                    return Utils::isCmMTN($value);
             }, $sParam)->message("{field} is not carried by MTN Cameroon");
     }
 
@@ -91,45 +101,6 @@ class Base
                 }
                     return true;
             }, $sParam)->message("{field} can not be blank/empty...");
-    }
-
-    /**
-     * @Brief make clear originator
-     *
-     * If the originator ('from' field) is invalid, some networks may reject the network
-     * whilst stinging you with the financial cost! While this cannot correct them, it
-     * will try its best to correctly format them.
-     */
-    private function clearOriginator(string $inp) : string
-    {
-        // Remove any invalid characters
-        $ret = preg_replace('/[^a-zA-Z0-9]/', '', (string)$inp);
-
-        if (preg_match('/[a-zA-Z]/', $inp)) {
-            // Alphanumeric format so make sure it's < 11 chars
-            $ret = mb_substr($ret, 0, 11);
-        } else {
-            // Numerical, remove any prepending '00'
-            if (mb_substr($ret, 0, 2) == '00') {
-                $ret = ltrim($ret, 0);
-                $ret = mb_substr($ret, 0, 15);
-            }
-        }
-
-        return (string)$ret;
-    }
-
-    private function isCmMobile(string $xTel) : bool
-    {
-        return (boolean) preg_match('/(?=^6).{9}$/', preg_replace('/[^\dxX]/', '', $xTel));
-    }
-
-    private function isCmMTN(string $xTel) : bool
-    {
-        if ($this->isCmMobile($xTel)) {
-            return (boolean) preg_match('/^(67|650|651|652|653|654|683|680|681|682)\s*/', $xTel);
-        }
-        return false;
     }
 
     public function isPossibleNumber(&$oValidator, string $sParam)

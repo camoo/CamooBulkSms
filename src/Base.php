@@ -259,14 +259,14 @@ class Base
     protected function encryptMsg(string $sMessage) : string
     {
         $sPubFile = dirname(__DIR__) . Constants::DS.'config'.Constants::DS.'keys' . Constants::DS . 'cert.pem';
-        if (!file_exists($sPubFile) || ($sContent = file_get_contents($sPubFile)) === false ) {
+        if (!file_exists($sPubFile) || ($sContent = file_get_contents($sPubFile)) === false) {
             return $sMessage;
         }
         try {
             $oPGP = new \nicoSWD\GPG\GPG();
             $sPubKey = new \nicoSWD\GPG\PublicKey($sContent);
             return $oPGP->encrypt($sPubKey, $sMessage);
-        } catch( CamooSmsException $err) {
+        } catch (CamooSmsException $err) {
             trigger_error($err->getMessage(), E_USER_ERROR);
             return $sMessage;
         }

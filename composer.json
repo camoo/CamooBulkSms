@@ -7,7 +7,8 @@
         "vlucas/valitron": "^1.4",
         "guzzlehttp/guzzle": "^6.2",
         "ext-mbstring": "*",
-        "nicoswd/php-gpg": "^1.7"
+        "nicoswd/php-gpg": "^1.7",
+        "giggsey/libphonenumber-for-php": "^8.8"
     },
     "minimum-stability": "dev",
     "homepage": "https://camoo.cm",
