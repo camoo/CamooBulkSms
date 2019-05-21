@@ -47,12 +47,12 @@ Quick Examples
 	var_dump($oMessage->send());
 ```
 
-##### Sending non customized sender SMS
+##### Sending non customized sender SMS. COSTS: 10FCFA/SMS
 ```php
     $oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
     $oMessage->from ='WhatEver'; // will be overridden
-	$oMessage->to = '+237612345678';
-    $oMessage->route ='classic';  // This parameter tells our system to use the classic route to send your message. COSTS: 10FCFA/SMS
+    $oMessage->to = '+237612345678';
+    $oMessage->route ='classic';  // This parameter tells our system to use the classic route to send your message. 
     $oMessage->message ='Hello Kmer World! Déjà vu!';
     var_dump($oMessage->send());
 ```
@@ -64,7 +64,7 @@ Quick Examples
 	$oMessage->from ='YourCompany';
 	$oMessage->to = '+237612345678';
 	$oMessage->message ='Hello Kmer World! Déjà vu!';
-    $oMessage->encrypt = true;
+        $oMessage->encrypt = true;
 	var_dump($oMessage->send());
   ```
 
