@@ -58,7 +58,7 @@ Quick Examples
     var_dump($oMessage->send());
 ```
 
-##### Sending a encrypted SMS
+##### Sending an encrypted SMS
   	Encrypt message using GPG before sending, ensure an end to end ecryption between your server and ours
 ```php
 	$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
