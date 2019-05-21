@@ -82,7 +82,7 @@ final class Message extends Base
     public $reference = null;
 
     /**
-     * The amount of seconds, that the message is valid. If a message is not delivered within this time, the message will be discarded. Should be greather than 30.
+     * The amount of seconds, that the message is valid. If a message is not delivered within this time, the message will be discarded. Should be greater than 30
      *
      * @var integer
      */
@@ -110,10 +110,12 @@ final class Message extends Base
         $oValidator
             ->rule('boolean', 'encrypt');
         $oValidator
-            ->rule('string', 'reference');
+            ->rule('lengthMax', 'reference', 32);
          $oValidator
             ->rule('integer', 'validity');
-       $this->isPossibleNumber($oValidator, 'to');
+        $oValidator
+            ->rule('min', 'validity', 30);
+        $this->isPossibleNumber($oValidator, 'to');
         $this->isValidUTF8Encoded($oValidator, 'from');
         $this->isValidUTF8Encoded($oValidator, 'message');
         return $oValidator;

@@ -14,7 +14,7 @@ class Utils
 
     public static function getNumberProto($xTel, $sCcode = null)
     {
-        if (isset($xTel) && Validation::notBlank($xTel)) {
+        if (isset($xTel) && !empty($xTel)) {
             try {
                 return self::phoneUtil()->parse($xTel, $sCcode);
             } catch (\libphonenumber\NumberParseException $e) {

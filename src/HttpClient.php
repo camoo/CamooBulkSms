@@ -19,12 +19,12 @@ class HttpClient
     /**
      * @var string
      */
-    protected $endpoint;
+    protected $endpoint = null;
 
     /**
      * @var array
      */
-    protected $userAgent = array();
+    protected $userAgent = [];
 
     /**
      * @var array
@@ -45,6 +45,11 @@ class HttpClient
      * @var object
      */
     private $oClient = null;
+
+    /**
+     * @var array
+     */
+    private $_headers = [];
 
     /**
      * @param string $endpoint
@@ -84,7 +89,8 @@ class HttpClient
      */
     private function validatorDefault(Validator $oValidator) : bool
     {
-        $oValidator->rule('required', ['api_key', 'api_secret', 'response_format']);
+        $oValidator->rule('required', ['X-Api-Key', 'X-Api-Secret']);
+        $oValidator->rule('optional', ['User-Agent', 'response_format']);
         $oValidator->rule('in', 'response_format', ['json', 'xml']);
         return $oValidator->rule('in', 'request', array_keys($this->hRequestVerbs))->validate();
     }
@@ -98,6 +104,14 @@ class HttpClient
     }
 
     /**
+     * @return strin userAgentString
+     */
+    protected function getUserAgentString() : string
+    {
+        return implode(' ', $this->userAgent);
+    }
+
+    /**
      * @param string      $method
      * @param string|null $data
      *
@@ -105,24 +119,24 @@ class HttpClient
      *
      * @throws HttpClientException
      */
-    public function performRequest($method, $data = array())
+    public function performRequest(string $method, array $data = [], array $headers = [])
     {
-        // Build the post data
-        $data = array_merge($data, $this->hAuthentication);
-        $data['user_agent'] = implode(' ', $this->userAgent);
-
-        //VALIDATE REQUEST
+        $this->setHeader($headers);
+        //VALIDATE HEADERS
+        $hHeaders = $this->getHeaders();
         $sMethod = strtoupper($method);
-        $oValidator = new Validator(array_merge(['request' => $sMethod], $data));
+        $oValidator = new Validator(array_merge(['request' => $sMethod,], $hHeaders));
         if (empty($this->validatorDefault($oValidator))) {
             throw new HttpClientException('Request not allowed!');
         }
 
         //UNSET REQUEST FORMAT
-        unset($data['response_format']);
+        if (array_key_exists('response_format', $data)) {
+            unset($data['response_format']);
+        }
 
         try {
-            $oResponse = $this->oClient->request($sMethod, $this->endpoint, [$this->hRequestVerbs[$sMethod] => $data]);
+            $oResponse = $this->oClient->request($sMethod, $this->endpoint, [$this->hRequestVerbs[$sMethod] => $data, 'headers' => $hHeaders]);
             if ($oResponse->getStatusCode() === 200) {
                 return (string) $oResponse->getBody();
             }
@@ -133,5 +147,28 @@ class HttpClient
                 throw new HttpClientException(Psr7\str($e->getResponse()));
             }
         }
+    }
+
+    protected function getAuthKeys() : array
+    {
+        return $this->hAuthentication;
+    }
+
+    protected function setHeader(array $option = [])
+    {
+        $default = [];
+        if ($hAuth = $this->getAuthKeys()) {
+            $default = [
+                'X-Api-Key'    => $hAuth['api_key'],
+                'X-Api-Secret' => $hAuth['api_secret'],
+                'User-Agent'   => $this->getUserAgentString()
+            ];
+        }
+        $this->_headers = $option += $default;
+    }
+
+    protected function getHeaders() : array
+    {
+        return $this->_headers;
     }
 }
