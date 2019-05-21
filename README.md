@@ -33,11 +33,7 @@ Quick Examples
 	$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
 	$oMessage->from ='YourCompany';
 	$oMessage->to = '+237612345678';
-	$oMessage->datacoding ='auto'; // possible values: plain,text,unicode or auto
-	$oMessage->type ='sms';
 	$oMessage->message ='Hello Kmer World! Déjà vu!';
-    	$oMessage->encrypt = true; //Encrypt message before sending.
-
 	var_dump($oMessage->send());
   ```
 ##### Send the same SMS to many recipients
@@ -47,12 +43,34 @@ Quick Examples
 	$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
 	$oMessage->from ='YourCompany';
 	$oMessage->to =['+237612345678', '+237612345679', '+237612345610', '+33689764530'];
-	$oMessage->datacoding ='auto';
-	$oMessage->type ='sms';
 	$oMessage->message ='Hello Kmer World! Déjà vu!';
-
 	var_dump($oMessage->send());
 ```
+
+##### Sending non customized sender SMS
+```php
+    $oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
+    $oMessage->from ='WhatEver'; // will be overridden
+	$oMessage->to = '+237612345678';
+    $oMessage->route ='classic';  // This parameter tells our system to use the classic route to send your message. COSTS: 10FCFA/SMS
+    $oMessage->message ='Hello Kmer World! Déjà vu!';
+    var_dump($oMessage->send());
+```
+
+##### Sending a encrypted SMS
+    - Encrypt message using GPG before sending, ensure an end to end ecryption between your server and ours
+```php
+	$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
+	$oMessage->from ='YourCompany';
+	$oMessage->to = '+237612345678';
+	$oMessage->message ='Hello Kmer World! Déjà vu!';
+    $oMessage->encrypt = true;
+	var_dump($oMessage->send());
+  ```
+
+##### Sending Bulk SMS from your Script
+It is obvious that sending bulk data to any system is a problem! Therefore you should check our recommendation for the best approach
+   - (_**[See example for bulk sms](/camoo/sms/wiki/How-to-send-Bulk-SMS-from-your-script#send-sms-sequentially)**_)
 
 Resources
 ---------

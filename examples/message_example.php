@@ -9,8 +9,16 @@ $oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
 $oMessage->from ='YourCompany';
 $oMessage->to = '+237612345678';
 $oMessage->message ='Hello Kmer World! Déjà vu!';
-#$oMessage->encrypt = true; //Encrypt message before sending.
 var_dump($oMessage->send());
+
+# Send encrypted message
+$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
+$oMessage->from ='YourCompany';
+$oMessage->to = '+237612345678';
+$oMessage->message ='Hello Kmer World! Déjà vu!';
+$oMessage->encrypt = true;
+var_dump($oMessage->send());
+
 
 ##### Example for sending classic SMS 10FCFA/SMS ########
 # When sending classic SMS you can't customize the sender. This type is only availble for cameroonian phone numbers

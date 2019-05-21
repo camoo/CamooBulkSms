@@ -156,6 +156,11 @@ class HttpClient
 
     protected function setHeader(array $option = [])
     {
+        $this->_headers += $option;
+    }
+
+    protected function getHeaders() : array
+    {
         $default = [];
         if ($hAuth = $this->getAuthKeys()) {
             $default = [
@@ -164,11 +169,6 @@ class HttpClient
                 'User-Agent'   => $this->getUserAgentString()
             ];
         }
-        $this->_headers = $option += $default;
-    }
-
-    protected function getHeaders() : array
-    {
-        return $this->_headers;
+        return $this->_headers += $default;
     }
 }

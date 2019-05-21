@@ -24,10 +24,23 @@ class Utils
         return null;
     }
 
-
-    public static function isValidPhoneNumber(string $xTel, string $sCcode = 'CM') : bool
+    public static function isValidPhoneNumber(string $xTel, string $sCcode, bool $bStrict = null) : bool
     {
-        return null !== ($oNumberProto=self::getNumberProto($xTel, $sCcode)) && self::phoneUtil()->isValidNumber($oNumberProto) && !empty(self::phoneUtil()->getNumberType($oNumberProto));
+        $bRet = ($oNumberProto=self::getNumberProto($xTel, $sCcode)) && self::phoneUtil()->isValidNumber($oNumberProto) && !empty(self::phoneUtil()->getNumberType($oNumberProto));
+        if ($bRet && $bStrict === true) {
+            return self::getPhoneRcode($oNumberProto) === strtoupper($sCcode);
+        }
+        return $bRet;
+    }
+
+    public static function getPhoneRcode(\libphonenumber\PhoneNumber $oNumberProto)
+    {
+        return self::phoneUtil()->getRegionCodeForNumber($oNumberProto);
+    }
+
+    public static function getPhoneCcode(\libphonenumber\PhoneNumber $oNumberProto)
+    {
+        return $oNumberProto->getCountryCode();
     }
 
     public static function isCmMTN(string $xTel) : bool

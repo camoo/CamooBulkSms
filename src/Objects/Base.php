@@ -56,7 +56,7 @@ class Base
         if (array_key_exists('route', $hPayload) && $hPayload['route'] === 'classic' && $oClass instanceof \Camoo\Sms\Objects\Message && array_key_exists('to', $hPayload)) {
             $asTo = explode(',', $hPayload['to']);
             foreach ($asTo as $sTo) {
-                if (!Utils::isValidPhoneNumber($sTo)) {
+                if (!Utils::isValidPhoneNumber($sTo, 'CM', true)) {
                     throw new CamooSmsException([$sTo => 'does not seems to be a cameroonian phone number!']);
                 }
             }
