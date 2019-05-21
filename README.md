@@ -52,13 +52,14 @@ Quick Examples
     $oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
     $oMessage->from ='WhatEver'; // will be overridden
     $oMessage->to = '+237612345678';
-    $oMessage->route ='classic';  // This parameter tells our system to use the classic route to send your message. 
+    // This parameter tells our system to use the classic route to send your message.
+    $oMessage->route ='classic'; 
     $oMessage->message ='Hello Kmer World! Déjà vu!';
     var_dump($oMessage->send());
 ```
 
 ##### Sending a encrypted SMS
-    - Encrypt message using GPG before sending, ensure an end to end ecryption between your server and ours
+  	Encrypt message using GPG before sending, ensure an end to end ecryption between your server and ours
 ```php
 	$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
 	$oMessage->from ='YourCompany';
@@ -70,7 +71,7 @@ Quick Examples
 
 ##### Sending Bulk SMS from your Script
 It is obvious that sending bulk data to any system is a problem! Therefore you should check our recommendation for the best approach
-   - (_**[See example for bulk sms](/camoo/sms/wiki/How-to-send-Bulk-SMS-from-your-script#send-sms-sequentially)**_)
+   - (_**[See example for bulk sms](https://github.com/camoo/sms/wiki/How-to-send-Bulk-SMS-from-your-script#send-sms-sequentially)**_)
 
 Resources
 ---------
