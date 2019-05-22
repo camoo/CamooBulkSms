@@ -35,12 +35,12 @@ class Message extends Base
     {
         try {
             return $this->execRequest(HttpClient::POST_REQUEST);
-        } catch (CamooSmsException $err) {
-            throw new CamooSmsException('SMS Request can not be performed!');
+        } catch (\MissingParameterException | \IllegalOptionException $err) {
+            throw new CamooSmsException($err->getMessage);
         }
     }
-   
-     /**
+
+    /**
      * view a sent message
      *
      * @throws Exception\CamooSmsException
@@ -51,8 +51,8 @@ class Message extends Base
         try {
             $this->setResourceName(Constants::RESOURCE_VIEW);
             return $this->execRequest(HttpClient::GET_REQUEST, true, Constants::RESOURCE_VIEW);
-        } catch (CamooSmsException $err) {
-            throw new CamooSmsException('View Request can not be performed!');
+        } catch (\MissingParameterException | \IllegalOptionException $err) {
+            throw new CamooSmsException($err->getMessage);
         }
     }
 }

@@ -8,7 +8,7 @@ namespace Camoo\Sms;
  */
 class Constants
 {
-    public const CLIENT_VERSION = '3.1.0';
+    public const CLIENT_VERSION = '3.1.1';
     public const CLIENT_TIMEOUT = 10; // 10 sec
     public const MIN_PHP_VERSION = 70100;
     public const DS = '/';
@@ -18,6 +18,7 @@ class Constants
     public const RESOURCE_VIEW = 'view';
     public const RESOURCE_BALANCE = 'balance';
     public const RESOURCE_ADD = 'topup';
+    public const RESPONSE_FORMAT = 'json';
     public const ERROR_PHP_VERSION = 'Your PHP-Version belongs to a release that is no longer supported. You should upgrade your PHP version as soon as possible, as it may be exposed to unpatched security vulnerabilities';
 
     public static $asCredentialKeyWords = ['api_key', 'api_secret'];

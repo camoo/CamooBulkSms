@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 /**
  * Send a sms
@@ -30,4 +31,14 @@ $oMessage->message ='Hello Kmer World! Déjà vu!';
 var_dump($oMessage->send());
 
 ################ Classic SMS END #####################
+#
+#
+# Change response format to XML
+$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
+$oMessage->setResponseFormat('xml');
+$oMessage->from ='YourCompany';
+$oMessage->to = '+237612345678';
+$oMessage->message ='Hello Kmer World! Déjà vu!';
+var_dump($oMessage->send());
+
 // Done!

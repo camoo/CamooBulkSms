@@ -7,7 +7,7 @@
  * Copyright reserved
  * File: sms_receive_dlr_example.php
  * updated: Nov 2016
- * Created by: Epiphane Tchabom (e.tchabom@camoo.cm)
+ * Created by: Camoo Sarl (sms@camoo.sarl)
  * Description: CAMOO BULKSMS LIB
  *
  * @link http://www.camoo.cm
@@ -56,7 +56,7 @@ status_date     datetime    */
 
 
 /*Check if DLR data match with a message sent*/
-$stmt=$pdo->prepare('SELECT HIGH_PRIORITY * FROM sms_messages WHERE camoo_sms_id=? and phone=?');
+$stmt=$pdo->prepare('SELECT * FROM sms_messages WHERE camoo_sms_id=? and phone=?');
 $stmt->execute(array($id,$phone));
 
 if ($stmt->rowCount()>0) {

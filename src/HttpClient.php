@@ -89,8 +89,8 @@ class HttpClient
      */
     private function validatorDefault(Validator $oValidator) : bool
     {
-        $oValidator->rule('required', ['X-Api-Key', 'X-Api-Secret']);
-        $oValidator->rule('optional', ['User-Agent', 'response_format']);
+        $oValidator->rule('required', ['X-Api-Key', 'X-Api-Secret', 'response_format']);
+        $oValidator->rule('optional', ['User-Agent']);
         $oValidator->rule('in', 'response_format', ['json', 'xml']);
         return $oValidator->rule('in', 'request', array_keys($this->hRequestVerbs))->validate();
     }
@@ -125,14 +125,9 @@ class HttpClient
         //VALIDATE HEADERS
         $hHeaders = $this->getHeaders();
         $sMethod = strtoupper($method);
-        $oValidator = new Validator(array_merge(['request' => $sMethod,], $hHeaders));
+        $oValidator = new Validator(array_merge(['request' => $sMethod, 'response_format' => $this->getEndPointFormat()], $hHeaders));
         if (empty($this->validatorDefault($oValidator))) {
-            throw new HttpClientException('Request not allowed!');
-        }
-
-        //UNSET REQUEST FORMAT
-        if (array_key_exists('response_format', $data)) {
-            unset($data['response_format']);
+            throw new HttpClientException(json_encode($oValidator->errors()));
         }
 
         try {
@@ -170,5 +165,11 @@ class HttpClient
             ];
         }
         return $this->_headers += $default;
+    }
+
+    protected function getEndPointFormat() : string
+    {
+        $asEndPoint = explode('.', $this->endpoint);
+        return end($asEndPoint);
     }
 }

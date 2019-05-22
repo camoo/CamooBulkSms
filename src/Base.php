@@ -67,7 +67,7 @@ class Base
         }
 
         if ((null !== $api_key && null !== $api_secret) || empty(static::$_ahConfigs['local_login'])) {
-            static::$_ahConfigs = ['local_login' => false, 'App' => ['response_format' => 'json']];
+            static::$_ahConfigs = ['local_login' => false, 'App' => ['response_format' => Constants::RESPONSE_FORMAT]];
             static::$_credentials = array_merge(static::$_ahConfigs['App'], array_combine(Constants::$asCredentialKeyWords, [$api_key, $api_secret]));
         }
         $sClass = get_called_class();
@@ -158,8 +158,7 @@ class Base
         if ($this->getResourceName() !== null && $this->getResourceName() !== 'sms') {
             $sResource = Constants::DS.$this->getResourceName();
         }
-        $response_format = !empty(static::$_ahConfigs['App']['response_format'])? static::$_ahConfigs['App']['response_format'] : 'json';
-        return sprintf($sUrlTmp.'sms'.$sResource.'%s', '.' . $response_format);
+        return sprintf($sUrlTmp.'sms'.$sResource.'%s', '.' . $this->getResponseFormat());
     }
     
     /**
@@ -172,7 +171,7 @@ class Base
     protected function decode(string $sBody)
     {
         try {
-            $sDecoder = 'decode' .ucfirst(static::$_ahConfigs['App']['response_format']);
+            $sDecoder = 'decode' .ucfirst($this->getResponseFormat());
             return $this->{$sDecoder}($sBody);
         } catch (CamooSmsException $e) {
             return $e->getMessage();
@@ -270,5 +269,15 @@ class Base
             trigger_error($err->getMessage(), E_USER_ERROR);
             return $sMessage;
         }
+    }
+
+    public function setResponseFormat(string $format) : void
+    {
+        static::$_ahConfigs['App']['response_format'] = strtolower($format);
+    }
+
+    public function getResponseFormat() : string
+    {
+        return !empty(static::$_ahConfigs['App']['response_format'])? static::$_ahConfigs['App']['response_format'] : Constants::RESPONSE_FORMAT;
     }
 }

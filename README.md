@@ -9,7 +9,7 @@ This library needs minimum requirement for doing well on run.
 
    - [Sign up](https://www.camoo.cm/join) for a free CAMOO SMS account
    - Ask CAMOO Team for new access_key for developers
-   - CAMOO SMS API client for PHP requires version 5.6.x and above
+   - CAMOO SMS API client for PHP requires version 7.1.x and above
 
 ## Installation via Composer
 
@@ -21,9 +21,16 @@ composer require camoo/sms
 ```
 ### Or go to
 
-   [Camoo-SMS-API-Latest Release](https://github.com/camoo/sms/releases/tag/v3.1.0)
+   [Camoo-SMS-API-Latest Release](https://github.com/camoo/sms/releases/tag/v3.1.1)
 
 And download the full version
+
+If you want to install a legacy version running with `PHP5.6` or `PHP7.0`
+Run composer with the command below
+```shell
+composer require camoo/sms "3.0.*"
+```
+Or Download it from [Camoo-SMS-API-Legacy](https://github.com/camoo/sms/releases/tag/v3.0.5)
 
 Quick Examples
 --------------
