@@ -53,19 +53,19 @@ Quick Examples
     $oMessage->from ='WhatEver'; // will be overridden
     $oMessage->to = '+237612345678';
     // This parameter tells our system to use the classic route to send your message.
-    $oMessage->route ='classic'; 
+    $oMessage->route ='classic';
     $oMessage->message ='Hello Kmer World! Déjà vu!';
     var_dump($oMessage->send());
 ```
 
 ##### Sending an encrypted SMS
-  	Encrypt message using GPG before sending, ensure an end to end ecryption between your server and ours
+	Encrypt message using GPG before sending, ensure an end to end ecryption between your server and ours
 ```php
 	$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
 	$oMessage->from ='YourCompany';
 	$oMessage->to = '+237612345678';
 	$oMessage->message ='Hello Kmer World! Déjà vu!';
-        $oMessage->encrypt = true;
+    $oMessage->encrypt = true;
 	var_dump($oMessage->send());
   ```
 

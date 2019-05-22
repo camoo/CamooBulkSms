@@ -25,7 +25,7 @@ class Base
     public function set(string $sProperty, $value, $oClass = null)
     {
         if ($oClass === null) {
-            return;
+            return null;
         }
         if (!property_exists($oClass, $sProperty)) {
             throw new CamooSmsException([$sProperty => 'is not allowed!']);
@@ -40,7 +40,7 @@ class Base
         $oClass->$sProperty = $value;
     }
 
-    public function get($oClass, $validator = 'default')
+    public function get($oClass, ?string $validator = 'default')
     {
         if (empty($oClass)) {
             return [];
@@ -65,7 +65,7 @@ class Base
         return array_filter($hPayload);
     }
 
-    public function isMTNCameroon(&$oValidator, string $sParam) : bool
+    public function isMTNCameroon(&$oValidator, string $sParam) : void
     {
         $oValidator
             ->rule(function ($field, $value, $params, $fields) {
@@ -78,7 +78,7 @@ class Base
             }, $sParam)->message("{field} is not carried by MTN Cameroon");
     }
 
-    public function isValidUTF8Encoded(&$oValidator, string $sParam)
+    public function isValidUTF8Encoded(&$oValidator, string $sParam) : void
     {
         $oValidator
             ->rule(function ($field, $value, $params, $fields) {
@@ -87,10 +87,9 @@ class Base
                 }
                 return mb_check_encoding($value, 'UTF-8');
             }, $sParam)->message("{field} needs to be a valid UTF-8 encoded string");
-        return true;
     }
 
-    public function notBlankRule(&$oValidator, string $sParam)
+    public function notBlankRule(&$oValidator, string $sParam) : void
     {
         $oValidator
             ->rule(function ($field, $value, $params, $fields) {
@@ -103,7 +102,7 @@ class Base
             }, $sParam)->message("{field} can not be blank/empty...");
     }
 
-    public function isPossibleNumber(&$oValidator, string $sParam)
+    public function isPossibleNumber(&$oValidator, string $sParam) : void
     {
         $oValidator
             ->rule(function ($field, $value, $params, $fields) {

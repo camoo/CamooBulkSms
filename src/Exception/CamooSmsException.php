@@ -1,11 +1,12 @@
 <?php
+declare(strict_types=1);
 namespace Camoo\Sms\Exception;
-
+use Exception;
 /**
  * Class CamooSmsException
  *
  */
-class CamooSmsException extends \Exception
+class CamooSmsException extends Exception
 {
 
     /**
@@ -15,7 +16,7 @@ class CamooSmsException extends \Exception
      * @param int            $code
      * @param Exception|null $previous
      */
-    public function __construct($message = null, $code = 0, Exception $previous = null)
+    public function __construct($message = null, int $code = 0, Exception $previous = null)
     {
         parent::__construct(json_encode($message), $code, $previous);
     }

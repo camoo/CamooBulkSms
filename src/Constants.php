@@ -8,16 +8,17 @@ namespace Camoo\Sms;
  */
 class Constants
 {
-    const CLIENT_VERSION = '3.1.0';
-    const CLIENT_TIMEOUT = 10; // 10 sec
-    const MIN_PHP_VERSION = 50600;
-    const DS = '/';
-    const END_POINT_URL = 'https://api.camoo.cm';
-    const APP_NAMESPACE = '\\Camoo\\Sms\\';
-    const RESOURCE_VIEW = 'view';
-    const RESOURCE_BALANCE = 'balance';
-    const RESOURCE_ADD = 'topup';
-    const ERROR_PHP_VERSION = 'Your PHP-Version belongs to a release that is no longer supported. You should upgrade your PHP version as soon as possible, as it may be exposed to unpatched security vulnerabilities';
+    public const CLIENT_VERSION = '3.1.0';
+    public const CLIENT_TIMEOUT = 10; // 10 sec
+    public const MIN_PHP_VERSION = 70100;
+    public const DS = '/';
+    public const END_POINT_URL = 'https://api.camoo.cm';
+    public const END_POINT_VERSION = 'v1';
+    public const APP_NAMESPACE = '\\Camoo\\Sms\\';
+    public const RESOURCE_VIEW = 'view';
+    public const RESOURCE_BALANCE = 'balance';
+    public const RESOURCE_ADD = 'topup';
+    public const ERROR_PHP_VERSION = 'Your PHP-Version belongs to a release that is no longer supported. You should upgrade your PHP version as soon as possible, as it may be exposed to unpatched security vulnerabilities';
 
     public static $asCredentialKeyWords = ['api_key', 'api_secret'];
 

@@ -14,8 +14,8 @@ use Valitron\Validator;
  */
 class HttpClient
 {
-    const GET_REQUEST = 'GET';
-    const POST_REQUEST = 'POST';
+    public const GET_REQUEST = 'GET';
+    public const POST_REQUEST = 'POST';
     /**
      * @var string
      */
@@ -57,7 +57,7 @@ class HttpClient
      *
      * @throws \HttpClientException if timeout settings are invalid
      */
-    public function __construct($endpoint, $hAuthentication, $timeout = 0)
+    public function __construct(string $endpoint, array $hAuthentication, int $timeout = 0)
     {
         $this->endpoint = $endpoint;
         $this->hAuthentication = $hAuthentication;
@@ -98,7 +98,7 @@ class HttpClient
     /**
      * @param string $userAgent
      */
-    public function addUserAgentString(string $userAgent)
+    public function addUserAgentString(string $userAgent) : void
     {
         $this->userAgent[] = $userAgent;
     }
@@ -154,7 +154,7 @@ class HttpClient
         return $this->hAuthentication;
     }
 
-    protected function setHeader(array $option = [])
+    protected function setHeader(array $option = []) : void
     {
         $this->_headers += $option;
     }

@@ -30,10 +30,15 @@ class Base
    /* @var object instance*/
     protected static $_create = null;
 
+     /**
+     *  @var string Target version for "Classic" Camoo API
+     */
+    protected $camooClassicApiVersion = Constants::END_POINT_VERSION;
+
     /**
      * @param $resourceName
      */
-    public function setResourceName(string $resourceName)
+    public function setResourceName(string $resourceName) : void
     {
         $this->_resourceName = $resourceName;
     }
@@ -50,7 +55,7 @@ class Base
      * @return Objects
      * @throws Exception\CamooSmsException
      */
-    public static function create($api_key = null, $api_secret = null)
+    public static function create(string $api_key = null, string $api_secret = null)
     {
         $sConfigFile = dirname(__DIR__) . Constants::DS.'config'.Constants::DS.'app.php';
         if ((null === $api_key || null === $api_secret) && !file_exists($sConfigFile)) {
@@ -107,19 +112,13 @@ class Base
         return self::$_credentials;
     }
 
-     /**
-     *  @var string Target version for "Classic" Camoo API
-     */
-    protected $camooClassicApiVersion = 'v1';
-
-
-    public function __get($property)
+    public function __get(string $property)
     {
         $hPayload = Objects\Base::create()->get($this->getDataObject());
         return $hPayload[$property];
     }
 
-    public function __set($property, $value)
+    public function __set(string $property, $value)
     {
         try {
             Objects\Base::create()->set($property, $value, $this->getDataObject());
@@ -150,7 +149,7 @@ class Base
       * Returns the CAMOO API URL
       *
       * @return string
-      * @author Epiphane Tchabom
+      * @author Camoo Sarl
       **/
     public function getEndPointUrl() : string
     {
@@ -168,9 +167,9 @@ class Base
      *
      * @param $sBody
      * @throw CamooSmsException
-     * @author Epiphane Tchabom
+     * @author Camoo Sarl
      */
-    protected function decode($sBody)
+    protected function decode(string $sBody)
     {
         try {
             $sDecoder = 'decode' .ucfirst(static::$_ahConfigs['App']['response_format']);
@@ -183,23 +182,23 @@ class Base
     /**
      * decodes response json string
      *
-     * @param $sBody
-     * @param $bAsHash
+     * @param string $sBody
      *
-     * @throw CamooSmsException
-     * @return object | Array
+     * @return stdClass
      */
-    private function decodeJson(string $sBody)
+    private function decodeJson(string $sBody) : ?\stdClass
     {
         try {
-            if (($xData = json_decode($sBody)) === null
+            if (($oData = json_decode($sBody)) === null
                     && (json_last_error() !== JSON_ERROR_NONE) ) {
-                throw new CamooSmsException(json_last_error_msg());
+                trigger_error(json_last_error_msg(), E_USER_ERROR);
+                return null;
             }
-        } catch (\Exception $e) {
-            return $e->getMessage();
+        } catch (CamooException $e) {
+            trigger_error($e->getMessage(), E_USER_ERROR);
+            return null;
         }
-        return $xData;
+        return $oData;
     }
 
     /**
@@ -210,17 +209,18 @@ class Base
      * @throw CamooSmsException
      * @return string (xml)
      */
-    private function decodeXml(string $sBody) : string
+    private function decodeXml(string $sBody) : ?string
     {
         try {
             $oXML = new \SimpleXMLElement($sBody);
-            if (($xData =$oXML->asXML()) === false) {
-                throw new CamooSmsException('response couldn\'t be decoded');
+            if (($sData =$oXML->asXML()) === false) {
+                trigger_error('XML response couldn\'t be decoded', E_USER_ERROR);
+                return null;
             }
-        } catch (\Exception $e) {
+        } catch (CamooException $e) {
             return $e->getMessage();
         }
-        return $xData;
+        return $sData;
     }
 
     /**
@@ -231,9 +231,9 @@ class Base
      * @param $sObjectValidator
      *
      * @return mixed
-     * @author Epiphane Tchabom
+     * @author Camoo Sarl
      */
-    protected function execRequest(string $sRequestType, $bWithData = true, $sObjectValidator = null)
+    protected function execRequest(string $sRequestType, bool $bWithData = true, string $sObjectValidator = null)
     {
         $oHttpClient = new HttpClient($this->getEndPointUrl(), $this->getCredentials());
         $data = [];

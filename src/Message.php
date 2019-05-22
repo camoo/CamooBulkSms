@@ -28,6 +28,7 @@ class Message extends Base
     /**
      * Send Message
      *
+     * @return mixed Message Response
      * @throws Exception\CamooSmsException
      */
     public function send()

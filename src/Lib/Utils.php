@@ -3,16 +3,16 @@ declare(strict_types=1);
 namespace Camoo\Sms\Lib;
 
 use \libphonenumber\PhoneNumberUtil;
+use \libphonenumber\PhoneNumber;
 
 class Utils
 {
-
     public static function phoneUtil()
     {
         return PhoneNumberUtil::getInstance();
     }
 
-    public static function getNumberProto($xTel, $sCcode = null)
+    public static function getNumberProto(string $xTel, string $sCcode = null) : ?PhoneNumber
     {
         if (isset($xTel) && !empty($xTel)) {
             try {
@@ -33,12 +33,12 @@ class Utils
         return $bRet;
     }
 
-    public static function getPhoneRcode(\libphonenumber\PhoneNumber $oNumberProto)
+    public static function getPhoneRcode(PhoneNumber $oNumberProto) : ?string
     {
         return self::phoneUtil()->getRegionCodeForNumber($oNumberProto);
     }
 
-    public static function getPhoneCcode(\libphonenumber\PhoneNumber $oNumberProto)
+    public static function getPhoneCcode(PhoneNumber $oNumberProto) : ?string
     {
         return $oNumberProto->getCountryCode();
     }
