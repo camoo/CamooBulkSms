@@ -32,5 +32,5 @@ stdClass Object
     - Choose option to authorize the transaction
     - Enter your MTN Mobile Money PIN
     - Choose the option to approve the Payment
-    - Choose option and confirm  
+    - Choose option and confirm
  */

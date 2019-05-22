@@ -1,7 +1,9 @@
 <?php
 declare(strict_types=1);
 namespace Camoo\Sms\Exception;
+
 use Exception;
+
 /**
  * Class CamooSmsException
  *
