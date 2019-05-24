@@ -4,6 +4,7 @@ namespace Camoo\Sms\Lib;
 
 use \libphonenumber\PhoneNumberUtil;
 use \libphonenumber\PhoneNumber;
+use stdClass;
 
 class Utils
 {
@@ -85,5 +86,17 @@ class Utils
         }
 
         return (string)$ret;
+    }
+
+    public static function normaliseKeys($oResponse) : stdClass
+    {
+        $oNewRet = new stdClass();
+        foreach ($oResponse as $sKey => $xVal) {
+            if ($xVal instanceof stdClass || is_array($xVal)) {
+                $xVal = self::normaliseKeys($xVal);
+            }
+            $oNewRet->{str_replace('-', '_', $sKey)} = $xVal;
+        }
+        return $oNewRet;
     }
 }

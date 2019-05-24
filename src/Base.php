@@ -197,7 +197,12 @@ class Base
             trigger_error($e->getMessage(), E_USER_ERROR);
             return null;
         }
-        return $oData;
+        try {
+            return Lib\Utils::normaliseKeys($oData);
+        } catch (\MissingParameterException | \TypeError | \IllegalOptionException $err) {
+            trigger_error($err->getMessage(), E_USER_WARNING);
+            return $oData;
+        }
     }
 
     /**
