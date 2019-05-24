@@ -99,4 +99,16 @@ class Utils
         }
         return $oNewRet;
     }
+
+    public static function getMessageKey(stdClass $oResponse, string $sKey) : ?string
+    {
+        if (property_exists($oResponse, 'sms') && property_exists($oResponse->sms, 'messages')) {
+            foreach ($oResponse->sms->messages as $oMsg) {
+                if (property_exists($oMsg, $sKey)) {
+                    return $oMsg->{$sKey};
+                }
+            }
+        }
+        return null;
+    }
 }
