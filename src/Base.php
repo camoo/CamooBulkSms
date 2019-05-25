@@ -88,6 +88,11 @@ class Base
         return static::$_create;
     }
 
+    public static function clear() : void
+    {
+        static::$_create = null;
+    }
+
     /**
      * @return object
      */
@@ -285,4 +290,5 @@ class Base
     {
         return !empty(static::$_ahConfigs['App']['response_format'])? static::$_ahConfigs['App']['response_format'] : Constants::RESPONSE_FORMAT;
     }
+
 }
