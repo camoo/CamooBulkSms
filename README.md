@@ -30,7 +30,7 @@ Run composer with the command below
 ```shell
 composer require camoo/sms "3.0.*"
 ```
-Or Download it from [Camoo-SMS-API-Legacy](https://github.com/camoo/sms/releases/tag/v3.0.5)
+Or Download it from [Camoo-SMS-API-Legacy](https://github.com/camoo/sms/releases/tag/v3.0.6)
 
 Quick Examples
 --------------
