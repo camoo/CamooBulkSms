@@ -103,6 +103,14 @@ class HttpClient
     }
 
     /**
+     * @return strin userAgentString
+     */
+    protected function getUserAgentString()
+    {
+        return implode(' ', $this->userAgent);
+    }
+
+    /**
      * @param string      $method
      * @param string|null $data
      *
@@ -121,9 +129,8 @@ class HttpClient
             throw new HttpClientException(json_encode($oValidator->errors()));
         }
 
-
         try {
-            $oResponse = $this->oClient->request($sMethod, $this->endpoint, [$this->hRequestVerbs[$sMethod] => $data]);
+            $oResponse = $this->oClient->request($sMethod, $this->endpoint, [$this->hRequestVerbs[$sMethod] => $data, 'headers' => $hHeaders]);
             if ($oResponse->getStatusCode() === 200) {
                 return $oResponse->getBody();
             }
