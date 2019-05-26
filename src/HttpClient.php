@@ -46,6 +46,11 @@ class HttpClient
     private $oClient = null;
 
     /**
+     * @var array
+     */
+    private $_headers = [];
+
+    /**
      * @param string $endpoint
      * @param int $timeout > 0
      *
@@ -83,7 +88,8 @@ class HttpClient
      */
     private function validatorDefault(Validator $oValidator)
     {
-        $oValidator->rule('required', ['api_key', 'api_secret', 'response_format']);
+        $oValidator->rule('required', ['X-Api-Key', 'X-Api-Secret', 'response_format']);
+        $oValidator->rule('optional', ['User-Agent']);
         $oValidator->rule('in', 'response_format', ['json', 'xml']);
         return $oValidator->rule('in', 'request', array_keys($this->hRequestVerbs))->validate();
     }
@@ -104,21 +110,17 @@ class HttpClient
      *
      * @throws HttpClientException
      */
-    public function performRequest($method, $data = array())
+    public function performRequest($method, $data = array(), $headers = array())
     {
-        // Build the post data
-        $data = array_merge($data, $this->hAuthentication);
-        $data['user_agent'] = implode(' ', $this->userAgent);
-
-    // VALIDATE REQUEST
+        $this->setHeader($headers);
+        //VALIDATE HEADERS
+        $hHeaders = $this->getHeaders();
         $sMethod = strtoupper($method);
-        $oValidator = new Validator(array_merge(['request' => $sMethod], $data));
+        $oValidator = new Validator(array_merge(['request' => $sMethod, 'response_format' => $this->getEndPointFormat()], $hHeaders));
         if (empty($this->validatorDefault($oValidator))) {
-            throw new HttpClientException('Request not allowed!');
+            throw new HttpClientException(json_encode($oValidator->errors()));
         }
 
-    //  UNSET REQUEST FORMAT
-        unset($data['response_format']);
 
         try {
             $oResponse = $this->oClient->request($sMethod, $this->endpoint, [$this->hRequestVerbs[$sMethod] => $data]);
@@ -132,5 +134,34 @@ class HttpClient
                 throw new HttpClientException(Psr7\str($e->getResponse()));
             }
         }
+    }
+
+    protected function getAuthKeys()
+    {
+        return $this->hAuthentication;
+    }
+
+    protected function setHeader($option = [])
+    {
+        $this->_headers += $option;
+    }
+
+    protected function getHeaders()
+    {
+        $default = [];
+        if ($hAuth = $this->getAuthKeys()) {
+            $default = [
+                'X-Api-Key'    => $hAuth['api_key'],
+                'X-Api-Secret' => $hAuth['api_secret'],
+                'User-Agent'   => $this->getUserAgentString()
+            ];
+        }
+        return $this->_headers += $default;
+    }
+
+    protected function getEndPointFormat()
+    {
+        $asEndPoint = explode('.', $this->endpoint);
+        return end($asEndPoint);
     }
 }

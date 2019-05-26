@@ -84,6 +84,14 @@ class Base
     }
 
     /**
+     * @return void
+     */
+    public static function clear()
+    {
+        static::$_create = null;
+    }
+
+    /**
      * @return object
      */
     public function getDataObject()
