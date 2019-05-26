@@ -21,7 +21,7 @@ composer require camoo/sms
 ```
 ### Or go to
 
-   [Camoo-SMS-API-Latest Release](https://gitlab.com/camoo/sms/releases/tag/v3.0.5)
+   [Camoo-SMS-API-Latest Release](https://gitlab.com/camoo/sms/releases/tag/v3.0.6)
 
 And download the full version
 
@@ -74,5 +74,5 @@ Quick Examples
 Resources
 ---------
 
-  * [Documentation](https://gitlab.com/camoo/sms/wikis)
-  * [Report issues](https://gitlab.com/camoo/sms/issues)
+  * [Documentation](https://github.com/camoo/sms/wiki)
+  * [Report issues](https://github.com/camoo/sms/issues)
