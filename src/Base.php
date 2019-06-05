@@ -10,29 +10,29 @@ use Camoo\Sms\Exception\CamooSmsException;
  */
 class Base
 {
-   /*@ var string API endpoint */
+    /*@ var string API endpoint */
     protected $_endPoint = Constants::END_POINT_URL;
     
-   /*@ var object ressource */
+    /*@ var object ressource */
     protected static $_dataObject = null;
 
-     /**
-     * @var string The resource name as it is known at the server
-     */
+    /**
+    * @var string The resource name as it is known at the server
+    */
     protected $_resourceName = null;
 
-   /* @var mixed credentials */
+    /* @var mixed credentials */
     protected static $_credentials = [];
 
     /* @var mixed configs*/
     protected static $_ahConfigs = [];
 
-   /* @var object instance*/
+    /* @var object instance*/
     protected static $_create = null;
 
-     /**
-     *  @var string Target version for "Classic" Camoo API
-     */
+    /**
+    *  @var string Target version for "Classic" Camoo API
+    */
     protected $camooClassicApiVersion = Constants::END_POINT_VERSION;
 
     /**
@@ -62,8 +62,8 @@ class Base
             throw new CamooSmsException(['config' => 'config/app.php is missing!']);
         }
         if (file_exists($sConfigFile)) {
-              static::$_ahConfigs = (require $sConfigFile);
-              static::$_credentials = static::$_ahConfigs['App'];
+            static::$_ahConfigs = (require $sConfigFile);
+            static::$_credentials = static::$_ahConfigs['App'];
         }
 
         if ((null !== $api_key && null !== $api_secret) || empty(static::$_ahConfigs['local_login'])) {
@@ -75,7 +75,7 @@ class Base
         $sCaller  = array_pop($asCaller);
         $sObjecClass = Constants::APP_NAMESPACE.'Objects\\'.$sCaller;
         if (class_exists($sObjecClass)) {
-             static::$_dataObject = new $sObjecClass();
+            static::$_dataObject = new $sObjecClass();
         }
 
         if (is_null(static::$_create)) {
@@ -150,12 +150,12 @@ class Base
         }
     }
 
-     /**
-      * Returns the CAMOO API URL
-      *
-      * @return string
-      * @author Camoo Sarl
-      **/
+    /**
+     * Returns the CAMOO API URL
+     *
+     * @return string
+     * @author Camoo Sarl
+     **/
     public function getEndPointUrl() : string
     {
         $sUrlTmp = $this->_endPoint.Constants::DS.$this->camooClassicApiVersion.Constants::DS;
@@ -194,7 +194,7 @@ class Base
     {
         try {
             if (($oData = json_decode($sBody)) === null
-                    && (json_last_error() !== JSON_ERROR_NONE) ) {
+                    && (json_last_error() !== JSON_ERROR_NONE)) {
                 trigger_error(json_last_error_msg(), E_USER_ERROR);
                 return null;
             }
@@ -290,5 +290,4 @@ class Base
     {
         return !empty(static::$_ahConfigs['App']['response_format'])? static::$_ahConfigs['App']['response_format'] : Constants::RESPONSE_FORMAT;
     }
-
 }

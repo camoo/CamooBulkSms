@@ -28,13 +28,13 @@ final class Message extends Base
      */
     protected $id;
 
-     /**
-     * The sender of the message. This can be a telephone number
-     * (including country code) or an alphanumeric string. In case
-     * of an alphanumeric string, the maximum length is 11 characters.
-     *
-     * @var string
-     */
+    /**
+    * The sender of the message. This can be a telephone number
+    * (including country code) or an alphanumeric string. In case
+    * of an alphanumeric string, the maximum length is 11 characters.
+    *
+    * @var string
+    */
     public $from = null;
 
     /**
@@ -111,7 +111,7 @@ final class Message extends Base
             ->rule('boolean', 'encrypt');
         $oValidator
             ->rule('lengthMax', 'reference', 32);
-         $oValidator
+        $oValidator
             ->rule('integer', 'validity');
         $oValidator
             ->rule('min', 'validity', 30);

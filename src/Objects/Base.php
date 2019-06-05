@@ -74,7 +74,7 @@ class Base
                 } elseif (is_string($value) && trim($value) === '') {
                     return false;
                 }
-                    return Utils::isCmMTN($value);
+                return Utils::isCmMTN($value);
             }, $sParam)->message("{field} is not carried by MTN Cameroon");
     }
 
@@ -98,7 +98,7 @@ class Base
                 } elseif (is_string($value) && trim($value) === '') {
                     return false;
                 }
-                    return true;
+                return true;
             }, $sParam)->message("{field} can not be blank/empty...");
     }
 
@@ -118,7 +118,7 @@ class Base
                         return false;
                     }
                 }
-                    return true;
+                return true;
             }, $sParam)->message("{field} no (correct) phone number found!");
     }
 }
