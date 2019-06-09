@@ -1,44 +1,46 @@
 {
-    "name": "camoo/sms",
-    "description": "CAMOO API Packages",
-    "type": "library",
-    "require": {
-        "php": ">=7.1.0",
-        "camoo/sms": "3.1.*",
-        "vlucas/valitron": "^1.4",
-        "guzzlehttp/guzzle": "^6.3",
-        "ext-mbstring": "*",
-        "nicoswd/php-gpg": "^1.7",
-        "giggsey/libphonenumber-for-php": "^8.10"
-    },
-    "minimum-stability": "dev",
-    "homepage": "https://camoo.cm",
-    "license": "MIT",
-    "prefer-stable" : true,
-    "require-dev": {
-    },
-    "authors": [
-        {
-            "name": "CAMOO SARL",
-            "email": "sms@camoo.sarl"
-        }
-    ],
+	"name": "camoo/sms",
+	"description": "CAMOO API Packages",
+	"type": "library",
+	"require": {
+		"php": ">=7.1.0",
+		"camoo/sms": "3.1.*",
+		"vlucas/valitron": "^1.4",
+		"guzzlehttp/guzzle": "^6.3",
+		"ext-mbstring": "*",
+		"nicoswd/php-gpg": "^1.7",
+		"giggsey/libphonenumber-for-php": "^8.10",
+		"cocur/background-process": "^0.7.0"
+	},
+	"minimum-stability": "dev",
+	"homepage": "https://camoo.cm",
+	"license": "MIT",
+	"prefer-stable" : true,
+	"require-dev": {
+	},
+	"authors": [
+		{
+			"name": "CAMOO SARL",
+			"email": "sms@camoo.sarl"
+		}
+	],
 
-    "keywords" : [
-        "CAMOO",
-        "SMS",
-        "SMS Gateway",
-        "GPG SMS encrytion",
-        "API-SMS"
-    ],
-    "autoload": {
-        "psr-4": {
-            "Camoo\\Sms\\": "src/"
-        }
-    },
-    "support": {
-        "issues": "https://github.com/camoo/sms/issues",
-        "source": "https://github.com/camoo/sms",
-        "wiki": "https://github.com/camoo/sms/wiki"
-    }
+	"keywords" : [
+		"CAMOO",
+		"SMS",
+		"BULK SMS",
+		"SMS Gateway",
+		"GPG SMS encrytion",
+		"API-SMS"
+	],
+	"autoload": {
+		"psr-4": {
+			"Camoo\\Sms\\": "src/"
+		}
+	},
+	"support": {
+		"issues": "https://github.com/camoo/sms/issues",
+		"source": "https://github.com/camoo/sms",
+		"wiki": "https://github.com/camoo/sms/wiki"
+	}
 }

@@ -21,6 +21,7 @@ namespace Camoo\Sms;
  *
  */
 use Camoo\Sms\Exception\CamooSmsException;
+use Cocur\BackgroundProcess\BackgroundProcess;
 
 class Message extends Base
 {
@@ -55,4 +56,13 @@ class Message extends Base
             throw new CamooSmsException($err->getMessage());
         }
     }
+
+	public function sendBulk()
+	{
+        try {
+            return $this->execBulk();
+        } catch (\MissingParameterException | \IllegalOptionException $err) {
+            throw new CamooSmsException($err->getMessage());
+        }
+	}
 }

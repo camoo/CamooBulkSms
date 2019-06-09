@@ -121,4 +121,9 @@ class Base
                 return true;
             }, $sParam)->message("{field} no (correct) phone number found!");
     }
+
+    public function has(string $sName) : bool
+    {
+        return property_exists($this, $sName);
+    }
 }

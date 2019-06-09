@@ -290,4 +290,31 @@ class Base
     {
         return !empty(static::$_ahConfigs['App']['response_format'])? static::$_ahConfigs['App']['response_format'] : Constants::RESPONSE_FORMAT;
     }
+
+
+    protected function execBulk()
+    {
+        $oClassObj = $this->getDataObject();
+        if (!$oClassObj->has('to')) {
+            return false;
+        }
+
+        $data = $this->getData();
+        if (!is_array($oClassObj->to)) {
+            return $this->execRequest(HttpClient::POST_REQUEST);
+        }
+
+        if ($oClassObj->encrypt === true) {
+            $data['message'] = $this->encryptMsg($data['message']);
+        }
+
+        $xDoBulkSMS = Lib\Utils::doBulkSms($data, $this->getCredentials());
+        $oProcess = new BackgroundProcess($xDoBulkSMS);
+        $oProcess->run();
+        while ($oProcess->isRunning()) {
+            echo '.';
+            sleep(1);
+        }
+        echo "\nDone.\n";
+    }
 }

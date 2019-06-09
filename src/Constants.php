@@ -20,12 +20,13 @@ class Constants
     public const RESOURCE_ADD = 'topup';
     public const RESPONSE_FORMAT = 'json';
     public const ERROR_PHP_VERSION = 'Your PHP-Version belongs to a release that is no longer supported. You should upgrade your PHP version as soon as possible, as it may be exposed to unpatched security vulnerabilities';
+    public const SMS_MAX_RECIPIENTS = 50;
 
     public static $asCredentialKeyWords = ['api_key', 'api_secret'];
 
-     /**
-     * @return string
-     */
+    /**
+    * @return string
+    */
     public static function getPhpVersion() : string
     {
         if (!defined('PHP_VERSION_ID')) {
@@ -34,7 +35,7 @@ class Constants
         }
 
         if (PHP_VERSION_ID < static::MIN_PHP_VERSION) {
-               trigger_error(static::ERROR_PHP_VERSION, E_USER_ERROR);
+            trigger_error(static::ERROR_PHP_VERSION, E_USER_ERROR);
         }
 
         return 'PHP/' . PHP_VERSION_ID;

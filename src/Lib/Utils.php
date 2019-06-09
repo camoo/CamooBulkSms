@@ -111,4 +111,32 @@ class Utils
         }
         return null;
     }
+
+    public static function doBulkSms($hData, $hCredentials)
+    {
+        $iCount = 0;
+        $asError = []; // save errors
+        $axMsgSent = []; //save sucessfuly sent numbers
+        $batch_loop = 2;
+        $iBatch = 1;
+        $asDestinationNumbers = array_chunk($hData['to'], Camoo\Sms\Constants::SMS_MAX_RECIPIENTS, true);
+        foreach ($asDestinationNumbers as $xNumber) {
+            $iCount++;
+            $oMessage = \Camoo\Sms\Message::create($hCredentials['api_key'], $hCredentials['api_secret']);
+            $oMessage->from = $hData['from'];
+            $oMessage->message = $hData['message'];
+            $oMessage->to = $xNumber;
+            $xResPonse = $oMessage->send();
+            if (property_exists($xResPonse, 'sms') && $xResPonse->sms->code === 200) {
+                $axMsgSent[] = $xNumber;
+            } else {
+                $asError[] = $xNumber;
+            }
+            if ($iCount === $batch_loop) {
+                $batch_loop = $batch_loop + $iBatch;
+                @sleep(4);
+            }
+        }
+        return true;
+    }
 }
