@@ -8,7 +8,6 @@ use stdClass;
 
 class Utils
 {
-    public static $clearObject = [\Camoo\Sms\Base::class, 'clear'];
     public static function phoneUtil()
     {
         return PhoneNumberUtil::getInstance();
@@ -122,7 +121,7 @@ class Utils
         $asDestinationNumbers = array_chunk($hData['to'], \Camoo\Sms\Constants::SMS_MAX_RECIPIENTS, true);
         foreach ($asDestinationNumbers as $xNumber) {
             $iCount++;
-            call_user_func(self::$clearObject);
+            call_user_func(\Camoo\Sms\Constants::CLEAR_OBJECT);
             $oMessage = \Camoo\Sms\Message::create($hCredentials['api_key'], $hCredentials['api_secret']);
             $oMessage->from = $hData['from'];
             $oMessage->message = $hData['message'];

@@ -21,6 +21,7 @@ class Constants
     public const RESPONSE_FORMAT = 'json';
     public const ERROR_PHP_VERSION = 'Your PHP-Version belongs to a release that is no longer supported. You should upgrade your PHP version as soon as possible, as it may be exposed to unpatched security vulnerabilities';
     public const SMS_MAX_RECIPIENTS = 50;
+    public const CLEAR_OBJECT = [\Camoo\Sms\Base::class, 'clear'];
 
     public static $asCredentialKeyWords = ['api_key', 'api_secret'];
 
