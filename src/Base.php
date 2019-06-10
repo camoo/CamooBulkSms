@@ -3,6 +3,7 @@ declare(strict_types=1);
 namespace Camoo\Sms;
 
 use Camoo\Sms\Exception\CamooSmsException;
+use Cocur\BackgroundProcess\BackgroundProcess;
 
 /**
  * Class Base
@@ -291,7 +292,6 @@ class Base
         return !empty(static::$_ahConfigs['App']['response_format'])? static::$_ahConfigs['App']['response_format'] : Constants::RESPONSE_FORMAT;
     }
 
-
     protected function execBulk()
     {
         $oClassObj = $this->getDataObject();
@@ -308,13 +308,8 @@ class Base
             $data['message'] = $this->encryptMsg($data['message']);
         }
 
-        $xDoBulkSMS = Lib\Utils::doBulkSms($data, $this->getCredentials());
-        $oProcess = new BackgroundProcess($xDoBulkSMS);
+        $oProcess = new BackgroundProcess(Lib\Utils::doBulkSms($data, $this->getCredentials()));
         $oProcess->run();
-        while ($oProcess->isRunning()) {
-            echo '.';
-            sleep(1);
-        }
-        echo "\nDone.\n";
+        return $data['to'];
     }
 }
