@@ -123,10 +123,10 @@ class Utils
             $iCount++;
             call_user_func(\Camoo\Sms\Constants::CLEAR_OBJECT);
             $oMessage = \Camoo\Sms\Message::create($hCredentials['api_key'], $hCredentials['api_secret']);
-            $oMessage->from = $hData['from'];
+            $oMessage->from    = $hData['from'];
             $oMessage->message = $hData['message'];
             $oMessage->to = $xNumber;
-            $axMsgSent[] = $oMessage->send();
+            $axMsgSent[]  = $oMessage->send();
             if ($iCount === $batch_loop) {
                 $batch_loop = $batch_loop + $iBatch;
                 @sleep(4);
