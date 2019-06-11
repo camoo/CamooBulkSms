@@ -72,12 +72,12 @@ Quick Examples
 	$oMessage->from ='YourCompany';
 	$oMessage->to = '+237612345678';
 	$oMessage->message ='Hello Kmer World! Déjà vu!';
-    $oMessage->encrypt = true;
+	$oMessage->encrypt = true;
 	var_dump($oMessage->send());
   ```
 
 ##### Sending BULK SMS
-	Send Bulk SMS in background. This call requires `shell_exec` should be enabled
+	Send Bulk SMS in background. This call requires `shell_exec` to be enabled
 ```php
 	$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
 	$oMessage->from ='YourCompany';
