@@ -112,19 +112,21 @@ class Utils
         return null;
     }
 
-    public static function doBulkSms($hData, $hCredentials)
+    public static function doBulkSms(array $hData, array $hCredentials) : array
     {
         $iCount = 0;
         $axMsgSent = [];
         $batch_loop = 2;
         $iBatch = 1;
         $asDestinationNumbers = array_chunk($hData['to'], \Camoo\Sms\Constants::SMS_MAX_RECIPIENTS, true);
+        unset($hData['to']);
         foreach ($asDestinationNumbers as $xNumber) {
             $iCount++;
             call_user_func(\Camoo\Sms\Constants::CLEAR_OBJECT);
             $oMessage = \Camoo\Sms\Message::create($hCredentials['api_key'], $hCredentials['api_secret']);
-            $oMessage->from    = $hData['from'];
-            $oMessage->message = $hData['message'];
+            foreach ($hData as $key => $value) {
+                $oMessage->{$key} = $value;
+            }
             $oMessage->to = $xNumber;
             $axMsgSent[]  = $oMessage->send();
             if ($iCount === $batch_loop) {

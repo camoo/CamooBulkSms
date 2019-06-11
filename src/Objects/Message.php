@@ -95,12 +95,19 @@ final class Message extends Base
      */
     public $encrypt = false;
 
+    /**
+     * Handle a status rapport. For more information: https://github.com/camoo/sms/wiki/Handle-a-status-rapport
+     *
+     * @var string
+     */
+    public $notify_url = null;
+
     public function validatorDefault(Validator $oValidator) : Validator
     {
         $oValidator
             ->rule('required', ['from', 'message', 'to']);
         $oValidator
-            ->rule('optional', ['type', 'datacoding','route', 'encrypt','reference', 'validity']);
+            ->rule('optional', ['type', 'datacoding','route', 'encrypt','reference', 'validity', 'notify_url']);
         $oValidator
             ->rule('in', 'type', ['sms','binary','flash']);
         $oValidator
@@ -115,6 +122,11 @@ final class Message extends Base
             ->rule('integer', 'validity');
         $oValidator
             ->rule('min', 'validity', 30);
+        $oValidator
+            ->rule('lengthMax', 'notify_url', 200);
+        $oValidator
+            ->rule('url', 'notify_url');
+
         $this->isPossibleNumber($oValidator, 'to');
         $this->isValidUTF8Encoded($oValidator, 'from');
         $this->isValidUTF8Encoded($oValidator, 'message');

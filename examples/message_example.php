@@ -31,14 +31,20 @@ $oMessage->message ='Hello Kmer World! Déjà vu!';
 var_dump($oMessage->send());
 
 ################ Classic SMS END #####################
-#
-#
 # Change response format to XML
 $oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
 $oMessage->setResponseFormat('xml');
 $oMessage->from ='YourCompany';
 $oMessage->to = '+237612345678';
 $oMessage->message ='Hello Kmer World! Déjà vu!';
+var_dump($oMessage->send());
+
+##### Set notification URL for a single message ########
+$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
+$oMessage->from ='YourCompany';
+$oMessage->to = '+237612345678';
+$oMessage->message ='Hello Kmer World! Déjà vu!';
+$oMessage->notify_url = 'http://your-own.url/script';
 var_dump($oMessage->send());
 
 // Done!
