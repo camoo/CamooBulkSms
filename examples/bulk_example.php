@@ -12,4 +12,29 @@ $oMessage->to = ['+237612345678', '+237612345679', '+237612345610', '+3368976453
 $oMessage->message ='Hello Kmer World! Déjà vu!';
 var_dump($oMessage->sendBulk());
 
+# Send Bulk sms and set callback to save result into the Database
+$hCallback = [
+    'driver' => [\Camoo\Sms\Database\MySQL::class, 'getInstance'],
+    'db_config' => [
+        [
+            'db_name'     => 'test',
+            'db_user'     => 'test',
+            'db_password' => 'secret',
+            'db_host'     => 'localhost',
+            'table_sms'   => 'my_table',
+        ]
+    ],
+    'variables' => [
+     //Your DB keys => Map camoo keys
+        'message'    => 'message',
+        'recipient'  => 'to',
+        'message_id' => 'message_id',
+        'sender'	 => 'from'
+    ]
+];
+$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
+$oMessage->from ='YourCompany';
+$oMessage->to = ['+237612345678', '+237612345679', '+237612345610', '+33689764530', '+4917612345671', '...'];
+$oMessage->message ='Hello Kmer World! Déjà vu!';
+var_dump($oMessage->sendBulk($hCallback));
 // Done!

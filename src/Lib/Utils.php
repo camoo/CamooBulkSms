@@ -113,12 +113,6 @@ class Utils
         return null;
     }
 
-    public static function db($options)
-    {
-        $default = ['table_prefix' => '', 'db_host' => 'localhost'];
-        $options += $default;
-    }
-
     public static function doBulkSms(array $hData, array $hCredentials, array $hCallBack=[]) : array
     {
         $iCount = 0;
@@ -139,8 +133,9 @@ class Utils
             $axMsgSent[]  = $oResponse;
             $hDataLock = $hData;
             $hDataLock['to'] = implode(",", $xNumber);
-            $hDataLock['message_id'] = static::getMessageKey($oResponse,'message_id');
-            static::lockData($hCallBack, $hDataLock, $oResponse);
+            $hDataLock['message_id'] = static::getMessageKey($oResponse, 'message_id');
+            $hDataLock['response'] = $oResponse;
+            static::doBulkCallback($hCallBack, $hDataLock);
             if ($iCount === $batch_loop) {
                 $batch_loop = $batch_loop + $iBatch;
                 @sleep(4);
@@ -149,14 +144,14 @@ class Utils
         return $axMsgSent;
     }
 
-    private static function lockData($hCallBack, $data, $xResponse)
+    private static function doBulkCallback($hCallBack, $data)
     {
         if (!empty($hCallBack)) {
             try {
                 $oDBInstance = call_user_func_array($hCallBack['driver'], $hCallBack['db_config']);
                 $oDB = $oDBInstance->getDB();
                 $hVariablesRow = $hCallBack['variables'];
-                $hVariables=[];
+                $hVariables = [];
                 foreach ($hVariablesRow as $key => $sMap) {
                     $hVariables[$sKey] = array_key_exists($sMap, $data)? $data[$sMap] : '';
                 }

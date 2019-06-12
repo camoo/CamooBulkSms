@@ -24,14 +24,16 @@ class MySQL
 
     private function getConf()
     {
+        $default = ['table_prefix' => '', 'db_host' => 'localhost', 'db_port' => 3306];
+        static::$_ahConfigs += $default;
         return static::$_ahConfigs;
     }
 
     public function getDB()
     {
         list($this->dbh_connect, $this->dbh_query, $this->dbh_error, $this->dbh_escape) = $handlers;
-        $this->connection = $this->doDbConnection($this->getConf());
-		return $this;
+        $this->connection = $this->db_connect($this->getConf());
+        return $this;
     }
 
     private function escape_string($string)
@@ -55,24 +57,17 @@ class MySQL
         }
     }
 
-    private function doDbConnection($config)
+    private function db_connect($config)
     {
         if (isset($config['table_prefix'])) {
             $this->table_prefix = $config['table_prefix'];
         }
 
-        if ($success = $this->db_connect($config['db_host'], $config['db_user'], $config['db_password'], $config['db_name'])) {
-            return $success;
-        }
-    }
-
-    private function db_connect($host, $user, $password, $name)
-    {
         if ($this->is_mysqli()) {
-            $connection = call_user_func($this->dbh_connect, $host, $user, $password, $name, $port, $socket);
+            $connection = call_user_func($this->dbh_connect, $config['db_host'], $config['db_user'], $config['db_password'], $config['db_name'], $config['db_port']);
         } else {
-            $connection = call_user_func($this->dbh_connect, $host, $user, $password, $name);
-            mysql_select_db($name);
+            $connection = call_user_func($this->dbh_connect, $config['db_host'], $config['db_user'], $config['db_password'], $config['db_name']);
+            mysql_select_db($config['db_name']);
         }
 
         if (!$connection) {
@@ -81,22 +76,6 @@ class MySQL
         }
 
         return $connection;
-    }
-
-    public function fetch_assoc($result)
-    {
-        $array = array();
-        if ($this->is_mysqli()) {
-            while ($row = $result->fetch_assoc()) {
-                $array[] = $row;
-            }
-        } else {
-            while ($row = mysql_fetch_assoc($result)) {
-                $array[] = $row;
-            }
-        }
-
-        return $array;
     }
 
     public function is_mysqli()
