@@ -31,7 +31,7 @@ $date   = $_GET['statusDatetime'];
 
 //Check if all data was received and return error if any data is missing.
 
-if ($id=='' || !$status=='' || !$phone=='' || !$date=='') {
+if (empty($id) || empty($status) || empty($phone) || empty($date)) {
     header('HTTP/1.1 400 Bad Request', true, 400);
     die();
 }
