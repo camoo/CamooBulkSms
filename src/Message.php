@@ -56,10 +56,10 @@ class Message extends Base
         }
     }
 
-    public function sendBulk()
+    public function sendBulk($hCallBack=[])
     {
         try {
-            return $this->execBulk();
+            return $this->execBulk($hCallBack);
         } catch (\MissingParameterException | \IllegalOptionException $err) {
             throw new CamooSmsException($err->getMessage());
         }

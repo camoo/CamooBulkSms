@@ -41,4 +41,10 @@ class Constants
 
         return 'PHP/' . PHP_VERSION_ID;
     }
+
+    public static function getSMSPath() : string
+    {
+        return dirname(__DIR__) .DIRECTORY_SEPARATOR;
+    }
+
 }

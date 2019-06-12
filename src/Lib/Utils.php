@@ -5,6 +5,7 @@ namespace Camoo\Sms\Lib;
 use \libphonenumber\PhoneNumberUtil;
 use \libphonenumber\PhoneNumber;
 use stdClass;
+use Camoo\Sms\Exception\CamooSmsException;
 
 class Utils
 {
@@ -112,7 +113,13 @@ class Utils
         return null;
     }
 
-    public static function doBulkSms(array $hData, array $hCredentials) : array
+    public static function db($options)
+    {
+        $default = ['table_prefix' => '', 'db_host' => 'localhost'];
+        $options += $default;
+    }
+
+    public static function doBulkSms(array $hData, array $hCredentials, array $hCallBack=[]) : array
     {
         $iCount = 0;
         $axMsgSent = [];
@@ -128,12 +135,36 @@ class Utils
                 $oMessage->{$key} = $value;
             }
             $oMessage->to = $xNumber;
-            $axMsgSent[]  = $oMessage->send();
+            $oResponse = $oMessage->send();
+            $axMsgSent[]  = $oResponse;
+            $hDataLock = $hData;
+            $hDataLock['to'] = implode(",", $xNumber);
+            $hDataLock['message_id'] = static::getMessageKey($oResponse,'message_id');
+            static::lockData($hCallBack, $hDataLock, $oResponse);
             if ($iCount === $batch_loop) {
                 $batch_loop = $batch_loop + $iBatch;
                 @sleep(4);
             }
         }
         return $axMsgSent;
+    }
+
+    private static function lockData($hCallBack, $data, $xResponse)
+    {
+        if (!empty($hCallBack)) {
+            try {
+                $oDBInstance = call_user_func_array($hCallBack['driver'], $hCallBack['db_config']);
+                $oDB = $oDBInstance->getDB();
+                $hVariablesRow = $hCallBack['variables'];
+                $hVariables=[];
+                foreach ($hVariablesRow as $key => $sMap) {
+                    $hVariables[$sKey] = array_key_exists($sMap, $data)? $data[$sMap] : '';
+                }
+
+                $oDB->insert($hCallBack['db_config']['table_sms'], $hVariables);
+            } catch (CamooSmsException $err) {
+                var_dump($err->getMessage());
+            }
+        }
     }
 }

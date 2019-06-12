@@ -292,7 +292,7 @@ class Base
         return !empty(static::$_ahConfigs['App']['response_format'])? static::$_ahConfigs['App']['response_format'] : Constants::RESPONSE_FORMAT;
     }
 
-    protected function execBulk()
+    protected function execBulk($hCallBack)
     {
         $oClassObj = $this->getDataObject();
         if (!$oClassObj->has('to')) {
@@ -307,9 +307,10 @@ class Base
         if ($oClassObj->encrypt === true) {
             $data['message'] = $this->encryptMsg($data['message']);
         }
-
-        $oProcess = new BackgroundProcess(Lib\Utils::doBulkSms($data, $this->getCredentials()));
+		$sPID = getmypid();
+        $oProcess = new BackgroundProcess(Lib\Utils::doBulkSms($data, $this->getCredentials(),$hCallBack));
         $oProcess->run();
-        return $data['to'];
+        $oProcess->setPid($sPID);
+        return $sPID;
     }
 }
