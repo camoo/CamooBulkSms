@@ -307,10 +307,8 @@ class Base
         if ($oClassObj->encrypt === true) {
             $data['message'] = $this->encryptMsg($data['message']);
         }
-		$sPID = getmypid();
-        $oProcess = new BackgroundProcess(Lib\Utils::doBulkSms($data, $this->getCredentials(),$hCallBack));
+        $oProcess = new BackgroundProcess(Lib\Utils::doBulkSms($data, $this->getCredentials(), $hCallBack));
         $oProcess->run();
-        $oProcess->setPid($sPID);
-        return $sPID;
+        return $data['to'];
     }
 }

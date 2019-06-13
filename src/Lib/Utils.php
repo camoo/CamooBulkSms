@@ -119,8 +119,15 @@ class Utils
         $axMsgSent = [];
         $batch_loop = 2;
         $iBatch = 1;
-        $asDestinationNumbers = array_chunk($hData['to'], \Camoo\Sms\Constants::SMS_MAX_RECIPIENTS, true);
+        $defaultCallBack=['bulk_chunk' => \Camoo\Sms\Constants::SMS_MAX_RECIPIENT];
+        $hCallBack += $defaultCallBack;
+        if ($hCallBack['bulk_chunk'] > 1) {
+            $asDestinationNumbers = array_chunk($hData['to'], $hCallBack['bulk_chunk'], true);
+        } else {
+            $asDestinationNumbers = $hData['to'];
+        }
         unset($hData['to']);
+        unset($hCallBack['bulk_chunk']);
         foreach ($asDestinationNumbers as $xNumber) {
             $iCount++;
             call_user_func(\Camoo\Sms\Constants::CLEAR_OBJECT);
@@ -157,6 +164,7 @@ class Utils
                 }
 
                 $oDB->insert($hCallBack['db_config']['table_sms'], $hVariables);
+                $oDB->close();
             } catch (CamooSmsException $err) {
                 var_dump($err->getMessage());
             }

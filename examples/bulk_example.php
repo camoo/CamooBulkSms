@@ -13,8 +13,10 @@ $oMessage->message ='Hello Kmer World! Déjà vu!';
 var_dump($oMessage->sendBulk());
 
 # Send Bulk sms and set callback to save result into the Database
+# TO do only if you store the messages in your own database
 $hCallback = [
     'driver' => [\Camoo\Sms\Database\MySQL::class, 'getInstance'],
+	'bulk_chunk' => 1,
     'db_config' => [
         [
             'db_name'     => 'test',

@@ -1,12 +1,13 @@
 <?php
 declare(strict_types=1);
 namespace Camoo\Sms\Database;
+use Camoo\Sms\Interfaces\Drivers;
 
 /**
  * Class MySQL
  *
  */
-class MySQL
+class MySQL implements Drivers
 {
     private $table_prefix = '';
     private $dbh_connect = null;
@@ -16,7 +17,7 @@ class MySQL
     private $connection = null;
     private static $_ahConfigs = [];
 
-    public static function getInstance(array $options)
+    public static function getInstance(array $options=[])
     {
         static::$_ahConfigs = $options;
         return new self;
@@ -41,7 +42,7 @@ class MySQL
         return $this->is_mysqli()?  call_user_func($this->dbh_escape, $this->connection, trim($string)) : call_user_func($this->dbh_escape, trim($string));
     }
 
-    private function close_connection()
+    public function close()
     {
         return $this->is_mysqli()?  mysqli_close($this->connection) : mysql_close();
     }
@@ -83,7 +84,7 @@ class MySQL
         return $this->dbh_connect === 'mysqli_connect';
     }
 
-    public function execute_query($query)
+    protected function query($query)
     {
         if ($this->is_mysqli()) {
             $result = call_user_func($this->dbh_query, $this->connection, $query);
@@ -92,13 +93,12 @@ class MySQL
         }
 
         if (!$result) {
-            echo $this->get_error();
+            echo $this->getError();
         }
-
         return $result;
     }
 
-    public function get_error()
+    protected function getError()
     {
         if ($this->is_mysqli()) {
             return mysqli_error($this->connection);
@@ -107,7 +107,7 @@ class MySQL
         }
     }
 
-    public function insert($table, $variables = array())
+    public function insert(string $table, array $variables = [])
     {
         //Make sure the array isn't empty
         if (empty($variables)) {
@@ -125,7 +125,7 @@ class MySQL
         $values = '('. implode(', ', $values) .')';
         
         $sql .= $fields .' VALUES '. $values;
-        $query = $this->execute_query($sql);
+        $query = $this->query($sql);
         
         if (!$query) {
             return false;
