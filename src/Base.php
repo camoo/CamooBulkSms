@@ -298,17 +298,7 @@ class Base
         if (!$oClassObj->has('to')) {
             return false;
         }
-
         $data = $this->getData();
-        if (!is_array($oClassObj->to)) {
-            return $this->execRequest(HttpClient::POST_REQUEST);
-        }
-
-        if ($oClassObj->encrypt === true) {
-            $data['message'] = $this->encryptMsg($data['message']);
-        }
-        $oProcess = new BackgroundProcess(Lib\Utils::doBulkSms($data, $this->getCredentials(), $hCallBack));
-        $oProcess->run();
-        return $data['to'];
+        return Lib\Utils::runTmp($data, $this->getCredentials(), $hCallBack);
     }
 }

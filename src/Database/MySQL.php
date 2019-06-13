@@ -32,7 +32,7 @@ class MySQL implements Drivers
 
     public function getDB()
     {
-        list($this->dbh_connect, $this->dbh_query, $this->dbh_error, $this->dbh_escape) = $handlers;
+        list($this->dbh_connect, $this->dbh_query, $this->dbh_error, $this->dbh_escape) = $this->getMysqlHandlers();
         $this->connection = $this->db_connect($this->getConf());
         return $this;
     }
@@ -84,7 +84,7 @@ class MySQL implements Drivers
         return $this->dbh_connect === 'mysqli_connect';
     }
 
-    protected function query($query)
+    public function query($query)
     {
         if ($this->is_mysqli()) {
             $result = call_user_func($this->dbh_query, $this->connection, $query);
@@ -114,9 +114,9 @@ class MySQL implements Drivers
             return false;
         }
         
-        $sql = "INSERT INTO ".$this->table_prefix. $table;
-        $fields = array();
-        $values = array();
+        $sql = "INSERT INTO ".$table;
+        $fields = [];
+        $values = [];
         foreach ($variables as $field => $value) {
             $fields[] = $field;
             $values[] = "'".$value."'";

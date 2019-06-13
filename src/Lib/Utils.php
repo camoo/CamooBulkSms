@@ -119,30 +119,36 @@ class Utils
         $axMsgSent = [];
         $batch_loop = 2;
         $iBatch = 1;
-        $defaultCallBack=['bulk_chunk' => \Camoo\Sms\Constants::SMS_MAX_RECIPIENT];
+        $asTo = explode(",", $hData['to']);
+        $defaultCallBack=['bulk_chunk' => \Camoo\Sms\Constants::SMS_MAX_RECIPIENTS];
         $hCallBack += $defaultCallBack;
         if ($hCallBack['bulk_chunk'] > 1) {
-            $asDestinationNumbers = array_chunk($hData['to'], $hCallBack['bulk_chunk'], true);
+            $asDestinationNumbers = array_chunk($asTo, $hCallBack['bulk_chunk'], true);
         } else {
-            $asDestinationNumbers = $hData['to'];
+            $asDestinationNumbers = $asTo;
         }
         unset($hData['to']);
         unset($hCallBack['bulk_chunk']);
         foreach ($asDestinationNumbers as $xNumber) {
             $iCount++;
-            call_user_func(\Camoo\Sms\Constants::CLEAR_OBJECT);
-            $oMessage = \Camoo\Sms\Message::create($hCredentials['api_key'], $hCredentials['api_secret']);
-            foreach ($hData as $key => $value) {
-                $oMessage->{$key} = $value;
+            try {
+                call_user_func(\Camoo\Sms\Constants::CLEAR_OBJECT);
+                $oMessage = \Camoo\Sms\Message::create($hCredentials['api_key'], $hCredentials['api_secret']);
+                foreach ($hData as $key => $value) {
+                    $oMessage->{$key} = $value;
+                }
+                $oMessage->to = $xNumber;
+                $oResponse = $oMessage->send();
+                $axMsgSent[]  = $oResponse;
+                $hDataLock = $hData;
+                $hDataLock['to'] = is_array($xNumber)? implode(",", $xNumber) : $xNumber;
+                $hDataLock['message_id'] = static::getMessageKey($oResponse, 'message_id');
+                $hDataLock['response'] = json_encode($oResponse);
+                @file_put_contents(\Camoo\Sms\Constants::getSMSPath(). 'tmp/debug.log', date("Y-m-d : H:i:s").$hDataLock['to'].PHP_EOL, FILE_APPEND | LOCK_EX);
+                static::doBulkCallback($hCallBack, $hDataLock);
+            } catch (CamooSmsException $err) {
+                @file_put_contents(\Camoo\Sms\Constants::getSMSPath(). 'tmp/error.log', date("Y-m-d : H:i:s").$err->getMessage().PHP_EOL, FILE_APPEND | LOCK_EX);
             }
-            $oMessage->to = $xNumber;
-            $oResponse = $oMessage->send();
-            $axMsgSent[]  = $oResponse;
-            $hDataLock = $hData;
-            $hDataLock['to'] = implode(",", $xNumber);
-            $hDataLock['message_id'] = static::getMessageKey($oResponse, 'message_id');
-            $hDataLock['response'] = $oResponse;
-            static::doBulkCallback($hCallBack, $hDataLock);
             if ($iCount === $batch_loop) {
                 $batch_loop = $batch_loop + $iBatch;
                 @sleep(4);
@@ -160,14 +166,44 @@ class Utils
                 $hVariablesRow = $hCallBack['variables'];
                 $hVariables = [];
                 foreach ($hVariablesRow as $key => $sMap) {
-                    $hVariables[$sKey] = array_key_exists($sMap, $data)? $data[$sMap] : '';
+                    $hVariables[$key] = array_key_exists($sMap, $data)? $data[$sMap] : '';
                 }
-
-                $oDB->insert($hCallBack['db_config']['table_sms'], $hVariables);
+                $sPrefix = !empty($hCallBack['db_config'][0]['table_prefix'])? $hCallBack['db_config'][0]['table_prefix'] : '';
+                $sTable = $sPrefix.$hCallBack['db_config'][0]['table_sms'];
+                $oDB->insert($sTable, $hVariables);
                 $oDB->close();
             } catch (CamooSmsException $err) {
-                var_dump($err->getMessage());
+                @file_put_contents(\Camoo\Sms\Constants::getSMSPath(). 'tmp/error.log', date("Y-m-d : H:i:s").$err->getMessage().PHP_EOL, FILE_APPEND | LOCK_EX);
             }
         }
+    }
+    public static function randomStr()
+    {
+        $bytes = random_bytes(5);
+        return bin2hex($bytes);
+    }
+
+    public static function runTmp(array $hData, array $hCredentials, array $hCallBack=[])
+    {
+        $sTmpName =  self::randomStr().'.bulk';
+        if (file_put_contents(\Camoo\Sms\Constants::getSMSPath(). 'tmp/' .$sTmpName, json_encode($hData).PHP_EOL, LOCK_EX)) {
+            $sBIN = 'php -f '. \Camoo\Sms\Constants::getSMSPath(). 'bin/Runner.php';
+            $sPASS = json_encode([$hCallBack,$sTmpName,$hCredentials]);
+            $sPid = (int)shell_exec(sprintf('%s %s %s 2>&1 & echo $!', $sBIN .' ' .base64_encode($sPASS), '>', '/dev/null'));
+            return $hData['to'];
+        }
+    }
+
+    public static function decodeJson($sJSON, $bAsHash = false)
+    {
+        try {
+            if (($xData = json_decode($sJSON, $bAsHash)) === null
+                && (json_last_error() !== JSON_ERROR_NONE)) {
+                throw new \Exception(json_last_error_msg());
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+        return $xData;
     }
 }
