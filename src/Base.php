@@ -298,7 +298,6 @@ class Base
         if (!$oClassObj->has('to')) {
             return false;
         }
-        $data = $this->getData();
-        return Lib\Utils::runTmp($data, $this->getCredentials(), $hCallBack);
+        return Lib\Utils::backgroundProcess($this->getData(), $this->getCredentials(), $hCallBack);
     }
 }

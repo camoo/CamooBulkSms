@@ -6,6 +6,7 @@ use \libphonenumber\PhoneNumberUtil;
 use \libphonenumber\PhoneNumber;
 use stdClass;
 use Camoo\Sms\Exception\CamooSmsException;
+use Camoo\Sms\Console\BackgroundProcess;
 
 class Utils
 {
@@ -120,6 +121,7 @@ class Utils
         $batch_loop = 2;
         $iBatch = 1;
         $asTo = explode(",", $hData['to']);
+        $asTo = array_unique($asTo);
         $defaultCallBack=['bulk_chunk' => \Camoo\Sms\Constants::SMS_MAX_RECIPIENTS];
         $hCallBack += $defaultCallBack;
         if ($hCallBack['bulk_chunk'] > 1) {
@@ -144,10 +146,10 @@ class Utils
                 $hDataLock['to'] = is_array($xNumber)? implode(",", $xNumber) : $xNumber;
                 $hDataLock['message_id'] = static::getMessageKey($oResponse, 'message_id');
                 $hDataLock['response'] = json_encode($oResponse);
-                @file_put_contents(\Camoo\Sms\Constants::getSMSPath(). 'tmp/debug.log', date("Y-m-d : H:i:s").$hDataLock['to'].PHP_EOL, FILE_APPEND | LOCK_EX);
                 static::doBulkCallback($hCallBack, $hDataLock);
             } catch (CamooSmsException $err) {
-                @file_put_contents(\Camoo\Sms\Constants::getSMSPath(). 'tmp/error.log', date("Y-m-d : H:i:s").$err->getMessage().PHP_EOL, FILE_APPEND | LOCK_EX);
+                trigger_error('ERREOR occured during sending SMS to' . $hDataLock['to'], E_USER_WARNING);
+                continue;
             }
             if ($iCount === $batch_loop) {
                 $batch_loop = $batch_loop + $iBatch;
@@ -159,7 +161,7 @@ class Utils
 
     private static function doBulkCallback($hCallBack, $data)
     {
-        if (!empty($hCallBack)) {
+        if (!empty($hCallBack['driver']) && !empty($hCallBack['db_config'])) {
             try {
                 $oDBInstance = call_user_func_array($hCallBack['driver'], $hCallBack['db_config']);
                 $oDB = $oDBInstance->getDB();
@@ -173,25 +175,31 @@ class Utils
                 $oDB->insert($sTable, $hVariables);
                 $oDB->close();
             } catch (CamooSmsException $err) {
-                @file_put_contents(\Camoo\Sms\Constants::getSMSPath(). 'tmp/error.log', date("Y-m-d : H:i:s").$err->getMessage().PHP_EOL, FILE_APPEND | LOCK_EX);
+                trigger_error('ERROR: doBulkCallback SMS. Check your DB config!', E_USER_ERROR);
             }
         }
     }
+
     public static function randomStr()
     {
         $bytes = random_bytes(5);
         return bin2hex($bytes);
     }
 
-    public static function runTmp(array $hData, array $hCredentials, array $hCallBack=[])
+    public static function backgroundProcess(array $hData, array $hCredentials, array $hCallBack=[]) : ?int
     {
-        $sTmpName =  self::randomStr().'.bulk';
-        if (file_put_contents(\Camoo\Sms\Constants::getSMSPath(). 'tmp/' .$sTmpName, json_encode($hData).PHP_EOL, LOCK_EX)) {
-            $sBIN = 'php -f '. \Camoo\Sms\Constants::getSMSPath(). 'bin/Runner.php';
-            $sPASS = json_encode([$hCallBack,$sTmpName,$hCredentials]);
-            $sPid = (int)shell_exec(sprintf('%s %s %s 2>&1 & echo $!', $sBIN .' ' .base64_encode($sPASS), '>', '/dev/null'));
-            return $hData['to'];
+        $default = ['path_to_php' => '/usr/bin/php'];
+        $hCallBack += $default;
+        if (is_executable($hCallBack['path_to_php'])) {
+            $sTmpName =  self::randomStr().'.bulk';
+            if (file_put_contents(\Camoo\Sms\Constants::getSMSPath(). 'tmp/' .$sTmpName, json_encode($hData).PHP_EOL, LOCK_EX)) {
+                $sBIN = $hCallBack['path_to_php'] .' -f '. \Camoo\Sms\Constants::getSMSPath(). 'bin/camoo.php';
+                $sPASS = json_encode([$hCallBack,$sTmpName,$hCredentials]);
+                $oProcess = new BackgroundProcess($sBIN .' ' .base64_encode($sPASS));
+                return $oProcess->run();
+            }
         }
+        return null;
     }
 
     public static function decodeJson($sJSON, $bAsHash = false)
@@ -199,10 +207,12 @@ class Utils
         try {
             if (($xData = json_decode($sJSON, $bAsHash)) === null
                 && (json_last_error() !== JSON_ERROR_NONE)) {
-                throw new \Exception(json_last_error_msg());
+                return null;
+                trigger_error(json_last_error_msg(), E_USER_ERROR);
             }
-        } catch (\Exception $e) {
-            return $e->getMessage();
+        } catch (CamooSmsException $e) {
+            trigger_error($e->getMessage(), E_USER_ERROR);
+            return null;
         }
         return $xData;
     }

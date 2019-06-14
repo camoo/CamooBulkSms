@@ -9,8 +9,7 @@
 		"guzzlehttp/guzzle": "^6.3",
 		"ext-mbstring": "*",
 		"nicoswd/php-gpg": "^1.7",
-		"giggsey/libphonenumber-for-php": "^8.10",
-		"cocur/background-process": "^0.7.0"
+		"giggsey/libphonenumber-for-php": "^8.10"
 	},
 	"minimum-stability": "dev",
 	"homepage": "https://camoo.cm",

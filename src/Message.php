@@ -35,7 +35,7 @@ class Message extends Base
     {
         try {
             return $this->execRequest(HttpClient::POST_REQUEST);
-        } catch (\MissingParameterException | \IllegalOptionException $err) {
+        } catch (CamooSmsException $err) {
             throw new CamooSmsException($err->getMessage());
         }
     }
@@ -51,7 +51,7 @@ class Message extends Base
         try {
             $this->setResourceName(Constants::RESOURCE_VIEW);
             return $this->execRequest(HttpClient::GET_REQUEST, true, Constants::RESOURCE_VIEW);
-        } catch (\MissingParameterException | \IllegalOptionException $err) {
+        } catch (CamooSmsException $err) {
             throw new CamooSmsException($err->getMessage());
         }
     }
@@ -60,7 +60,7 @@ class Message extends Base
     {
         try {
             return $this->execBulk($hCallBack);
-        } catch (\MissingParameterException | \IllegalOptionException $err) {
+        } catch (CamooSmsException $err) {
             throw new CamooSmsException($err->getMessage());
         }
     }
