@@ -92,7 +92,7 @@ It is obvious that sending bulk data to any system is a problem! Therefore you s
 
 WordPress Plugin
 ----------------
-If you are looking for a powerfull WordPress plugin to send SMS, then download our [wp-camoo-sms](https://github.com/camoo/wp-camoo-sms)
+If you are looking for a powerful WordPress plugin to send SMS, then download our [wp-camoo-sms](https://github.com/camoo/wp-camoo-sms)
 
 Resources
 ---------
