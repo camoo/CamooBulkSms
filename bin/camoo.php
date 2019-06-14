@@ -7,7 +7,13 @@ if (version_compare(PHP_VERSION, '7.1.0', '<')) {
 }
 
 try {
-    require_once dirname(dirname(dirname(__DIR__))) . '/autoload.php';
+    if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
+        // Downloaded installation
+        require_once dirname(__DIR__) . '/vendor/autoload.php';
+    } else {
+        // Composer installation
+        require_once dirname(dirname(dirname(__DIR__))) . '/autoload.php';
+    }
 } catch (\Exception $err) {
     trigger_error($err->getMessage(), E_USER_ERROR);
     exit;
