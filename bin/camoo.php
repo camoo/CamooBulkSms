@@ -3,7 +3,7 @@
 
 if (version_compare(PHP_VERSION, '7.1.0', '<')) {
     trigger_error('The CAMOO SMS Library requires PHP version 7.1.0 or higher', E_USER_ERROR);
-	exit;
+    exit;
 }
 
 try {
