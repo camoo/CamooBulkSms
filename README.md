@@ -90,6 +90,10 @@ Quick Examples
 It is obvious that sending bulk data to any system is a problem! Therefore you should check our recommendation for the best approach
    - (_**[See example for bulk sms](https://github.com/camoo/sms/wiki/How-to-send-Bulk-SMS-from-your-script#send-sms-sequentially)**_)
 
+WordPress Plugin
+----------------
+If you are looking for a powerfull WordPress plugin to send SMS, then download our [wp-camoo-sms](https://github.com/camoo/wp-camoo-sms)
+
 Resources
 ---------
 
