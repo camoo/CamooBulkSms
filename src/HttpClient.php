@@ -61,8 +61,7 @@ class HttpClient
     {
         $this->endpoint = $endpoint;
         $this->hAuthentication = $hAuthentication;
-    
-        $this->addUserAgentString('CamooSms/ApiClient/' . Constants::CLIENT_VERSION);
+        $this->addUserAgentString($this->getAPIInfo());
         $this->addUserAgentString(Constants::getPhpVersion());
 
         if (!is_int($timeout) || $timeout < 0) {
@@ -171,5 +170,19 @@ class HttpClient
     {
         $asEndPoint = explode('.', $this->endpoint);
         return end($asEndPoint);
+    }
+
+    protected function getAPIInfo() : string
+    {
+        $sIdentity = 'CamooSms/ApiClient/';
+        if (defined('WP_CAMOO_SMS_VERSION')) {
+            $sWPV = '';
+            global $wp_version;
+            if ($wp_version) {
+                $sWPV = $wp_version;
+            }
+            $sIdentity = 'WP'.$sWPV.'/CamooSMS' .WP_CAMOO_SMS_VERSION .Constants::DS;
+        }
+        return $sIdentity .Constants::CLIENT_VERSION;
     }
 }

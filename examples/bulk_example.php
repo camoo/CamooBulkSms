@@ -40,4 +40,13 @@ $oMessage->from ='YourCompany';
 $oMessage->to = ['+237612345678', '+237612345679', '+237612345610', '+33689764530', '+4917612345671', '...'];
 $oMessage->message ='Hello Kmer World! Déjà vu!';
 var_dump($oMessage->sendBulk($hCallback));
+
+
+# Send personalized Bulk SMS
+#
+$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
+$oMessage->from ='YourCompany';
+$oMessage->to = [['name' => 'John Doe', 'mobile' => '+237612345678'], ['name' => 'Jeanne Doe', 'mobile' => '+237612345679'], ['...']];
+$oMessage->message ='Hello Kmer World! Déjà vu!';
+var_dump($oMessage->sendBulk($hCallback));
 // Done!

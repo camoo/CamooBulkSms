@@ -116,29 +116,51 @@ class Utils
 
     public static function doBulkSms(array $hData, array $hCredentials, array $hCallBack=[]) : array
     {
+        $asPersonlizeMsgFind = \Camoo\Sms\Constants::PERSONLIZE_MSG_KEYS;
         $iCount = 0;
         $axMsgSent = [];
         $batch_loop = 2;
         $iBatch = 1;
-        $asTo = explode(",", $hData['to']);
-        $asTo = array_unique($asTo);
+        $xTo = $hData['to'];
+        $bIsMultiArray = self::isMultiArray($xTo);
+        if (is_array($xTo) && !$bIsMultiArray) {
+            $xTo = array_unique($xTo);
+        }
         $defaultCallBack=['bulk_chunk' => \Camoo\Sms\Constants::SMS_MAX_RECIPIENTS];
         $hCallBack += $defaultCallBack;
-        if ($hCallBack['bulk_chunk'] > 1) {
-            $asDestinationNumbers = array_chunk($asTo, $hCallBack['bulk_chunk'], true);
+        if ($hCallBack['bulk_chunk'] > 1 && !$bIsMultiArray) {
+            $asDestinationNumbers = array_chunk($xTo, $hCallBack['bulk_chunk'], true);
         } else {
-            $asDestinationNumbers = $asTo;
+            $asDestinationNumbers = $xTo;
         }
         unset($hData['to']);
         unset($hCallBack['bulk_chunk']);
+        $sMessageRaw = !empty($hData['message'])? $hData['message'] : null;
         foreach ($asDestinationNumbers as $xNumber) {
             $iCount++;
             try {
                 call_user_func(\Camoo\Sms\Constants::CLEAR_OBJECT);
                 $oMessage = \Camoo\Sms\Message::create($hCredentials['api_key'], $hCredentials['api_secret']);
+
+                // PERSONALZE
+                $sName = '';
+                if (is_array($xNumber) && !empty($xNumber['name'])) {
+                    $sName = self::satanizer($xNumber['name']);
+                }
+                $asPersonlizeMsgReplace = [$sName];
+
+                if (null !== $sMessageRaw) {
+                    $hData['message'] = str_replace($asPersonlizeMsgFind, $asPersonlizeMsgReplace, $sMessageRaw);
+                }
+
+                if (is_array($xNumber) && !empty($xNumber['mobile'])) {
+                    $xNumber = $xNumber['mobile'];
+                }
+
                 foreach ($hData as $key => $value) {
                     $oMessage->{$key} = $value;
                 }
+
                 $oMessage->to = $xNumber;
                 $oResponse = $oMessage->send();
                 $axMsgSent[]  = $oResponse;
@@ -148,7 +170,7 @@ class Utils
                 $hDataLock['response'] = json_encode($oResponse);
                 static::doBulkCallback($hCallBack, $hDataLock);
             } catch (CamooSmsException $err) {
-                trigger_error('ERREOR occured during sending SMS to' . $hDataLock['to'], E_USER_WARNING);
+                trigger_error('ERREOR occured during sending SMS to' . $xNumber, E_USER_WARNING);
                 continue;
             }
             if ($iCount === $batch_loop) {
@@ -215,5 +237,75 @@ class Utils
             return null;
         }
         return $xData;
+    }
+
+    public static function isMultiArray(array $option) : bool
+    {
+        rsort($option);
+        return isset($option[0]) && is_array($option[0]);
+    }
+
+    public static function mapMobile($xValue) : ?string
+    {
+        if (is_string($xValue)) {
+            return $xValue;
+        }
+        if (is_array($xValue) && !empty($xValue['mobile'])) {
+            return self::phoneNumberE164Format($xValue['mobile']);
+        }
+        return null;
+    }
+
+    public static function satanizer($str, $keep_newlines = false)
+    {
+        if (is_object($str) || is_array($str)) {
+            return '';
+        }
+        $filtered = (string) $str;
+        if (!mb_check_encoding($filtered, 'UTF-8')) {
+            return '';
+        }
+        if (strpos($filtered, '<') !== false) {
+            $callback = function ($match) {
+                if (false === strpos($matches[0], '>')) {
+                    return htmlentities($matches[0], ENT_QUOTES | ENT_IGNORE, "UTF-8");
+                }
+                return $matches[0];
+            };
+            $filtered = preg_replace_callback('%<[^>]*?((?=<)|>|$)%', $callback, $filtered);
+            $filtered = self::stripAllTags($filtered, false);
+            $filtered = str_replace("<\n", "&lt;\n", $filtered);
+        }
+        if (! $keep_newlines) {
+            $filtered = preg_replace('/[\r\n\t ]+/', ' ', $filtered);
+        }
+        $filtered = trim($filtered);
+        $found = false;
+        while (preg_match('/%[a-f0-9]{2}/i', $filtered, $match)) {
+            $filtered = str_replace($match[0], '', $filtered);
+            $found    = true;
+        }
+        if ($found) {
+            $filtered = trim(preg_replace('/ +/', ' ', $filtered));
+        }
+        return $filtered;
+    }
+
+    public static function stripAllTags($string, $remove_breaks = false)
+    {
+        $string = preg_replace('@<(script|style)[^>]*?>.*?</\\1>@si', '', $string);
+        $string = strip_tags($string);
+        if ($remove_breaks) {
+            $string = preg_replace('/[\r\n\t ]+/', ' ', $string);
+        }
+        return trim($string);
+    }
+
+    public static function phoneNumberE164Format(string $xTel) : ?string
+    {
+        if ($sTel = preg_replace('/[^\dxX]/', '', $xTel)) {
+            return '+' .ltrim($sTel, '0');
+        }
+        return null;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 namespace Camoo\Sms\Console;
 
 class BackgroundProcess
@@ -9,7 +10,7 @@ class BackgroundProcess
         $this->command  = $command;
     }
 
-    public function run($sOutputFile = '/dev/null', $bAppend = false)
+    public function run(string $sOutputFile = '/dev/null', bool $bAppend = false) : ?int
     {
         if ($this->command === null) {
             return null;

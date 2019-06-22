@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 namespace Camoo\Sms\Console;
 
 use Camoo\Sms\Exception\CamooSmsException;

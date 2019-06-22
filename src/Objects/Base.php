@@ -34,7 +34,7 @@ class Base
             $value = Utils::clearSender($value);
         }
         if ($sProperty === 'to') {
-            $value = !is_array($value)? $value : implode(',', $value);
+            $value = is_array($value)? $value : [Utils::phoneNumberE164Format($value)];
         }
 
         $oClass->$sProperty = $value;
@@ -54,8 +54,9 @@ class Base
             }
         }
         if (array_key_exists('route', $hPayload) && $hPayload['route'] === 'classic' && $oClass instanceof \Camoo\Sms\Objects\Message && array_key_exists('to', $hPayload)) {
-            $asTo = explode(',', $hPayload['to']);
-            foreach ($asTo as $sTo) {
+            $asTo = $hPayload['to'];
+            foreach ($asTo as $xTo) {
+                $sTo = is_array($xTo) && !empty($xTo['mobile'])? $xTo['mobile'] : $xTo;
                 if (!Utils::isValidPhoneNumber($sTo, 'CM', true)) {
                     throw new CamooSmsException([$sTo => 'does not seems to be a cameroonian phone number!']);
                 }
@@ -106,12 +107,12 @@ class Base
     {
         $oValidator
             ->rule(function ($field, $value, $params, $fields) {
-                $asTo = explode(',', $value);
                 if (empty($value)) {
                     return false;
                 }
 
-                foreach ($asTo as $sTo) {
+                foreach ($value as $xTo) {
+                    $sTo = is_array($xTo) && !empty($xTo['mobile'])? $xTo['mobile'] : $xTo;
                     $xTel = preg_replace('/[^\dxX]/', '', $sTo);
                     $xTel = ltrim($xTel, '0');
                     if (!is_numeric($xTel) || mb_strlen($xTel) <= 10 || mb_strlen($xTel) > 15) {

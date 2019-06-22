@@ -8,7 +8,7 @@ namespace Camoo\Sms;
  */
 class Constants
 {
-    public const CLIENT_VERSION = '3.1.2';
+    public const CLIENT_VERSION = '3.1.3';
     public const CLIENT_TIMEOUT = 10; // 10 sec
     public const MIN_PHP_VERSION = 70100;
     public const DS = '/';
@@ -22,6 +22,8 @@ class Constants
     public const ERROR_PHP_VERSION = 'Your PHP-Version belongs to a release that is no longer supported. You should upgrade your PHP version as soon as possible, as it may be exposed to unpatched security vulnerabilities';
     public const SMS_MAX_RECIPIENTS = 50;
     public const CLEAR_OBJECT = [\Camoo\Sms\Base::class, 'clear'];
+    public const MAP_MOBILE =[\Camoo\Sms\Lib\Utils::class,'mapMobile'];
+    public const PERSONLIZE_MSG_KEYS = ['%NAME%'];
 
     public static $asCredentialKeyWords = ['api_key', 'api_secret'];
 
@@ -46,5 +48,4 @@ class Constants
     {
         return dirname(__DIR__) .DIRECTORY_SEPARATOR;
     }
-
 }

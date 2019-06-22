@@ -36,6 +36,7 @@ class Base
     */
     protected $camooClassicApiVersion = Constants::END_POINT_VERSION;
 
+
     /**
      * @param $resourceName
      */
@@ -252,6 +253,10 @@ class Base
             $oClassObj = $this->getDataObject();
             if (is_object($oClassObj) && $oClassObj instanceof \Camoo\Sms\Objects\Message && array_key_exists('message', $data) && $oClassObj->encrypt === true) {
                 $data['message'] = $this->encryptMsg($data['message']);
+            }
+            if (is_object($oClassObj) && $oClassObj instanceof \Camoo\Sms\Objects\Message && array_key_exists('to', $data)) {
+                $xTo = $data['to'];
+                $data['to'] = is_array($xTo)? implode(',', array_map(Constants::MAP_MOBILE, $xTo)) : $xTo;
             }
         }
         if (array_key_exists('encrypt', $data)) {

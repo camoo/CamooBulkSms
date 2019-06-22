@@ -21,7 +21,7 @@ composer require camoo/sms
 ```
 ### Or go to
 
-   [Camoo-SMS-API-Latest Release](https://github.com/camoo/sms/releases/tag/v3.1.2)
+   [Camoo-SMS-API-Latest Release](https://github.com/camoo/sms/releases/tag/v3.1.3)
 
 And download the full version
 
@@ -85,7 +85,15 @@ Quick Examples
 	$oMessage->message ='Hello Kmer World! Déjà vu!';
 	var_dump($oMessage->sendBulk());
   ```
-
+##### Sending Personalized BULK SMS
+	Send Bulk SMS in background. This call requires `shell_exec` to be enabled
+```php
+	$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
+	$oMessage->from ='YourCompany';
+	$oMessage->to = [['name' => 'John Doe', 'mobile' => '+237612345678'], ['name' => 'Jeanne Doe', 'mobile' => '+237612345679'], ['...']];
+	$oMessage->message ='Hello Kmer World! Déjà vu!';
+	var_dump($oMessage->sendBulk());
+  ```
 ##### Sending Bulk SMS from your Script
 It is obvious that sending bulk data to any system is a problem! Therefore you should check our recommendation for the best approach
    - (_**[See example for bulk sms](https://github.com/camoo/sms/wiki/How-to-send-Bulk-SMS-from-your-script#send-sms-sequentially)**_)
