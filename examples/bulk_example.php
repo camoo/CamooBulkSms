@@ -15,7 +15,7 @@ var_dump($oMessage->sendBulk());
 # Send Bulk sms and set callback to save result into the Database
 # TO do only if you store the messages in your own database
 $hCallback = [
-    'path_to_php'  => '/usr/bin/php', // match your running php version. should >= 7.1.0
+    'path_to_php'  => '/usr/bin/php', // match your running php version. should be >= 7.1.0
     'driver' => [\Camoo\Sms\Database\MySQL::class, 'getInstance'],
     'bulk_chunk' => 1,
     'db_config' => [
@@ -47,6 +47,6 @@ var_dump($oMessage->sendBulk($hCallback));
 $oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
 $oMessage->from ='YourCompany';
 $oMessage->to = [['name' => 'John Doe', 'mobile' => '+237612345678'], ['name' => 'Jeanne Doe', 'mobile' => '+237612345679'], ['...']];
-$oMessage->message ='Hello Kmer World! Déjà vu!';
+$oMessage->message ='Hello %NAME% Kmer World! Déjà vu!';
 var_dump($oMessage->sendBulk($hCallback));
 // Done!
