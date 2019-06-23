@@ -77,7 +77,7 @@ Quick Examples
   ```
 
 ##### Sending BULK SMS
-	Send Bulk SMS in background. This call requires `shell_exec` to be enabled
+Send Bulk SMS in background. This call requires `shell_exec` to be enabled
 ```php
 	$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
 	$oMessage->from ='YourCompany';
@@ -86,8 +86,8 @@ Quick Examples
 	var_dump($oMessage->sendBulk());
   ```
 ##### Sending Personalized BULK SMS
-	Send Bulk SMS in background. This call requires `shell_exec` to be enabled
-	You  should use the placeholder `%NAME%` in your message and the property `to` should be an associative array containing `name` and `mobile` for each element. See the example below
+Send Bulk SMS in background. This call requires `shell_exec` to be enabled
+You  should use the placeholder `%NAME%` in your message and the property `to` should be an associative array containing `name` and `mobile` for each element. See the example below
 ```php
 	$oMessage = \Camoo\Sms\Message::create('YOUR_API_KEY', 'YOUR_API_SECRET');
 	$oMessage->from ='YourCompany';
