@@ -14,8 +14,8 @@ use Valitron\Validator;
  */
 class HttpClient
 {
-    public const GET_REQUEST = 'GET';
-    public const POST_REQUEST = 'POST';
+    const GET_REQUEST = 'GET';
+    const POST_REQUEST = 'POST';
     /**
      * @var string
      */

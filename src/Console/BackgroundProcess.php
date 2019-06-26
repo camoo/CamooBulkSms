@@ -10,7 +10,7 @@ class BackgroundProcess
         $this->command  = $command;
     }
 
-    public function run(string $sOutputFile = '/dev/null', bool $bAppend = false) : ?int
+    public function run(string $sOutputFile = '/dev/null', bool $bAppend = false)
     {
         if ($this->command === null) {
             return null;

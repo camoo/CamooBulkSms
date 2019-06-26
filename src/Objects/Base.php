@@ -40,7 +40,7 @@ class Base
         $oClass->$sProperty = $value;
     }
 
-    public function get($oClass, ?string $validator = 'default')
+    public function get($oClass, $validator = 'default')
     {
         if (empty($oClass)) {
             return [];

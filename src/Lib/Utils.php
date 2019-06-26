@@ -36,12 +36,12 @@ class Utils
         return $bRet;
     }
 
-    public static function getPhoneRcode(PhoneNumber $oNumberProto) : ?string
+    public static function getPhoneRcode(PhoneNumber $oNumberProto)
     {
         return self::phoneUtil()->getRegionCodeForNumber($oNumberProto);
     }
 
-    public static function getPhoneCcode(PhoneNumber $oNumberProto) : ?string
+    public static function getPhoneCcode(PhoneNumber $oNumberProto)
     {
         return $oNumberProto->getCountryCode();
     }
@@ -51,7 +51,7 @@ class Utils
         return self::getPhoneCarrier($xTel) === 'MTN';
     }
 
-    public static function getPhoneCarrier(string $xTel, string $sCcode = 'CM') : ?string
+    public static function getPhoneCarrier(string $xTel, string $sCcode = 'CM')
     {
         if (null !== ($oNumberProto=self::getNumberProto($xTel, $sCcode))) {
             $oCarrierMapper = \libphonenumber\PhoneNumberToCarrierMapper::getInstance();
@@ -102,7 +102,7 @@ class Utils
         return $oNewRet;
     }
 
-    public static function getMessageKey(stdClass $oResponse, string $sKey) : ?string
+    public static function getMessageKey(stdClass $oResponse, string $sKey)
     {
         if (property_exists($oResponse, 'sms') && property_exists($oResponse->sms, 'messages')) {
             foreach ($oResponse->sms->messages as $oMsg) {
@@ -208,7 +208,7 @@ class Utils
         return bin2hex($bytes);
     }
 
-    public static function backgroundProcess(array $hData, array $hCredentials, array $hCallBack=[]) : ?int
+    public static function backgroundProcess(array $hData, array $hCredentials, array $hCallBack=[])
     {
         $default = ['path_to_php' => '/usr/bin/php'];
         $hCallBack += $default;
@@ -245,7 +245,7 @@ class Utils
         return isset($option[0]) && is_array($option[0]);
     }
 
-    public static function mapMobile($xValue) : ?string
+    public static function mapMobile($xValue)
     {
         if (is_string($xValue)) {
             return $xValue;
@@ -301,7 +301,7 @@ class Utils
         return trim($string);
     }
 
-    public static function phoneNumberE164Format(string $xTel) : ?string
+    public static function phoneNumberE164Format(string $xTel)
     {
         if ($sTel = preg_replace('/[^\dxX]/', '', $xTel)) {
             return '+' .ltrim($sTel, '0');

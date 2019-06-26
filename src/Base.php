@@ -48,7 +48,7 @@ class Base
     /**
      * @return string
      */
-    public function getResourceName() : ?string
+    public function getResourceName()
     {
         return $this->_resourceName;
     }
@@ -142,7 +142,7 @@ class Base
      * @param $sValidator
      * @return Array
      */
-    public function getData(?string $sValidator = 'default') : array
+    public function getData($sValidator = 'default') : array
     {
         try {
             return Objects\Base::create()->get($this->getDataObject(), $sValidator);
@@ -192,7 +192,7 @@ class Base
      *
      * @return stdClass
      */
-    private function decodeJson(string $sBody) : ?\stdClass
+    private function decodeJson(string $sBody)
     {
         try {
             if (($oData = json_decode($sBody)) === null
@@ -220,7 +220,7 @@ class Base
      * @throw CamooSmsException
      * @return string (xml)
      */
-    private function decodeXml(string $sBody) : ?string
+    private function decodeXml(string $sBody)
     {
         try {
             $oXML = new \SimpleXMLElement($sBody);

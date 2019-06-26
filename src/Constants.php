@@ -8,22 +8,22 @@ namespace Camoo\Sms;
  */
 class Constants
 {
-    public const CLIENT_VERSION = '3.1.3';
-    public const CLIENT_TIMEOUT = 10; // 10 sec
-    public const MIN_PHP_VERSION = 70100;
-    public const DS = '/';
-    public const END_POINT_URL = 'https://api.camoo.cm';
-    public const END_POINT_VERSION = 'v1';
-    public const APP_NAMESPACE = '\\Camoo\\Sms\\';
-    public const RESOURCE_VIEW = 'view';
-    public const RESOURCE_BALANCE = 'balance';
-    public const RESOURCE_ADD = 'topup';
-    public const RESPONSE_FORMAT = 'json';
-    public const ERROR_PHP_VERSION = 'Your PHP-Version belongs to a release that is no longer supported. You should upgrade your PHP version as soon as possible, as it may be exposed to unpatched security vulnerabilities';
-    public const SMS_MAX_RECIPIENTS = 50;
-    public const CLEAR_OBJECT = [\Camoo\Sms\Base::class, 'clear'];
-    public const MAP_MOBILE =[\Camoo\Sms\Lib\Utils::class,'mapMobile'];
-    public const PERSONLIZE_MSG_KEYS = ['%NAME%'];
+    const CLIENT_VERSION = '3.1.3';
+    const CLIENT_TIMEOUT = 10; // 10 sec
+    const MIN_PHP_VERSION = 70100;
+    const DS = '/';
+    const END_POINT_URL = 'https://api.camoo.cm';
+    const END_POINT_VERSION = 'v1';
+    const APP_NAMESPACE = '\\Camoo\\Sms\\';
+    const RESOURCE_VIEW = 'view';
+    const RESOURCE_BALANCE = 'balance';
+    const RESOURCE_ADD = 'topup';
+    const RESPONSE_FORMAT = 'json';
+    const ERROR_PHP_VERSION = 'Your PHP-Version belongs to a release that is no longer supported. You should upgrade your PHP version as soon as possible, as it may be exposed to unpatched security vulnerabilities';
+    const SMS_MAX_RECIPIENTS = 50;
+    const CLEAR_OBJECT = [\Camoo\Sms\Base::class, 'clear'];
+    const MAP_MOBILE =[\Camoo\Sms\Lib\Utils::class,'mapMobile'];
+    const PERSONLIZE_MSG_KEYS = ['%NAME%'];
 
     public static $asCredentialKeyWords = ['api_key', 'api_secret'];
 
