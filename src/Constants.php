@@ -10,7 +10,7 @@ class Constants
 {
     const CLIENT_VERSION = '3.1.3';
     const CLIENT_TIMEOUT = 10; // 10 sec
-    const MIN_PHP_VERSION = 70100;
+    const MIN_PHP_VERSION = 70000;
     const DS = '/';
     const END_POINT_URL = 'https://api.camoo.cm';
     const END_POINT_VERSION = 'v1';
