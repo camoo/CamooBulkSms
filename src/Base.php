@@ -206,7 +206,7 @@ class Base
         }
         try {
             return Lib\Utils::normaliseKeys($oData);
-        } catch (\MissingParameterException | \TypeError | \IllegalOptionException $err) {
+        } catch (CamooException $err) {
             trigger_error($err->getMessage(), E_USER_WARNING);
             return $oData;
         }

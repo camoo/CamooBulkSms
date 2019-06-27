@@ -15,7 +15,7 @@ class Utils
         return PhoneNumberUtil::getInstance();
     }
 
-    public static function getNumberProto(string $xTel, string $sCcode = null) : ?PhoneNumber
+    public static function getNumberProto(string $xTel, string $sCcode = null)
     {
         if (isset($xTel) && !empty($xTel)) {
             try {

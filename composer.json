@@ -3,7 +3,7 @@
 	"description": "CAMOO API Packages",
 	"type": "library",
 	"require": {
-		"php": ">=7.1.0",
+		"php": ">=7.0",
 		"camoo/sms": "3.1.*",
 		"vlucas/valitron": "^1.4",
 		"guzzlehttp/guzzle": "^6.3",
@@ -30,6 +30,7 @@
 		"BULK SMS",
 		"SMS Gateway",
 		"GPG SMS encrytion",
+		"Plugin camoo sms",
 		"API-SMS"
 	],
 	"autoload": {
