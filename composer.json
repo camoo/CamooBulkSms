@@ -16,6 +16,7 @@
 	"license": "MIT",
 	"prefer-stable" : true,
 	"require-dev": {
+        "phpunit/phpunit": "^8.4"
 	},
 	"authors": [
 		{
@@ -23,7 +24,6 @@
 			"email": "sms@camoo.sarl"
 		}
 	],
-
 	"keywords" : [
 		"CAMOO",
 		"SMS",
@@ -37,6 +37,17 @@
 		"psr-4": {
 			"Camoo\\Sms\\": "src/"
 		}
+	},
+    "autoload-dev": {
+        "psr-4": {
+            "CamooSms\\Test\\": "tests"
+        }
+    },
+    "suggest": {
+        "phpunit/phpunit": "Allows automated tests to be run without system-wide install."
+    },
+	"scripts" : {
+		"test": "phpunit --colors=always"
 	},
 	"support": {
 		"issues": "https://github.com/camoo/sms/issues",
