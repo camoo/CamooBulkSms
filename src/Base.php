@@ -4,6 +4,7 @@ namespace Camoo\Sms;
 
 use Camoo\Sms\Exception\CamooSmsException;
 use Cocur\BackgroundProcess\BackgroundProcess;
+use Camoo\Sms\Exception\HttpClientException;
 
 /**
  * Class Base
@@ -254,7 +255,11 @@ class Base
         if (array_key_exists('encrypt', $data)) {
             unset($data['encrypt']);
         }
-        return $this->decode($oHttpClient->performRequest($sRequestType, $data));
+        try {
+            return $this->decode($oHttpClient->performRequest($sRequestType, $data));
+        } catch (HttpClientException $err) {
+            throw new CamooSmsException(['_error' => $err->getMessage()]);
+        }
     }
 
     /**

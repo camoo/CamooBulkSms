@@ -9,11 +9,11 @@ use Camoo\Sms\Message;
 use Camoo\Sms\Constants;
 
 /**
- * Class MessgeTest
+ * Class MessageTest
  * @author CamooSarl
  * @covers \Camoo\Sms\Message
  */
-class MessgeTest extends TestCase
+class MessageTest extends TestCase
 {
     private $oMessage;
 
@@ -26,7 +26,6 @@ class MessgeTest extends TestCase
 
     public function tearDown() : void
     {
-        // unset($this->oMessage);
         $this->oMessage->clear();
     }
 

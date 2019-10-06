@@ -9,6 +9,7 @@ use Camoo\Sms\Message;
 use Camoo\Sms\Exception\CamooSmsException;
 use Camoo\Sms\Objects;
 use Camoo\Sms\HttpClient;
+use Camoo\Sms\Exception\HttpClientException;
 
 /**
  * Class BaseTest
@@ -244,16 +245,39 @@ class BaseTest extends TestCase
      * @covers \Camoo\Sms\Base::execRequest
      * @dataProvider createDataProvider
      */
-    public function testexecRequestException($apikey, $apisecret)
+    public function testexecRequestException1($apikey, $apisecret)
     {
         $this->expectException(CamooSmsException::class);
-        $this->assertNull($this->oBase->clear());
         $oMessage = Message::create($apikey, $apisecret);
         $oMessage->from ='YourCompany';
         $oMessage->tel = '+237612345678';
         $oMessage->message ='Hello Kmer World! Déjà vu!';
 
         $oMessage->execRequest(HttpClient::POST_REQUEST);
+    }
+
+    /**
+     * @covers \Camoo\Sms\Base::execRequest
+     * @dataProvider createDataProvider
+     */
+    public function testexecRequestException2($apikey, $apisecret)
+    {
+        $this->expectException(CamooSmsException::class);
+        $this->oBase->clear();
+        $oMessage = Message::create($apikey.'epi2', $apisecret .'epi2');
+        $oMessage->from ='YourCompany';
+        $oMessage->to = '+237612345678';
+        $oMessage->message ='Hello Kmer World! Déjà vu!';
+
+        $this->oClientMock = $this->getMockBuilder(HttpClient::class)
+            ->setMethods(['performRequest'])
+            ->setConstructorArgs([$this->oBase->getEndPointUrl(), $this->oBase->getCredentials()])
+            ->getMock();
+
+        $this->oClientMock->expects($this->once())
+            ->method('performRequest')
+            ->will($this->throwException(new HttpClientException));
+        $oMessage->execRequest(HttpClient::POST_REQUEST, true, null, $this->oClientMock);
     }
 
     /**
