@@ -22,13 +22,6 @@ class BaseTest extends TestCase
     public function setUp() : void
     {
         $this->oBase = new Base;
-        $this->oAccessTokenMocked = $this->getMockBuilder(Base::class)
-            ->setMethods(['apiCall'])
-            ->getMock();
-
-        $this->oAccessTokenMocked->expects($this->any())
-            ->method('apiCall')
-            ->will($this->returnValue(['result' => ['access_token' => time() .'khddkjdhdjdhoid847d_f'], 'code' => 200, 'entity' => null]));
     }
 
     public function tearDown() : void

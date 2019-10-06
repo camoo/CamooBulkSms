@@ -56,12 +56,14 @@ class Message extends Base
         }
     }
 
+    /**
+     * sends bulk message
+     *
+     * @return integer|bool
+     */
     public function sendBulk($hCallBack=[])
     {
-        try {
-            return $this->execBulk($hCallBack);
-        } catch (CamooSmsException $err) {
-            throw new CamooSmsException($err->getMessage());
-        }
+        $xResp = $this->execBulk($hCallBack);
+        return !empty($xResp)? $xResp : false;
     }
 }
