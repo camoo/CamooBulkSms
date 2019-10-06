@@ -96,6 +96,13 @@ final class Message extends Base
     public $encrypt = false;
 
     /**
+     * Public PGP file to Encrypt message before sending (Optional).
+     *
+     * @var string
+     */
+    public $pgp_public_file = null;
+
+    /**
      * Handle a status rapport. For more information: https://github.com/camoo/sms/wiki/Handle-a-status-rapport
      *
      * @var string
@@ -107,7 +114,7 @@ final class Message extends Base
         $oValidator
             ->rule('required', ['from', 'message', 'to']);
         $oValidator
-            ->rule('optional', ['type', 'datacoding','route', 'encrypt','reference', 'validity', 'notify_url']);
+            ->rule('optional', ['type', 'datacoding','route', 'encrypt','reference', 'validity', 'notify_url', 'pgp_public_file']);
         $oValidator
             ->rule('in', 'type', ['sms','binary','flash']);
         $oValidator
@@ -126,6 +133,10 @@ final class Message extends Base
             ->rule('lengthMax', 'notify_url', 200);
         $oValidator
             ->rule('url', 'notify_url');
+        $oValidator
+            ->rule(function ($field, $value, $params, $fields) {
+                return file_exists($value);
+            }, 'pgp_public_file')->message("{field} does not exist");
 
         $this->isPossibleNumber($oValidator, 'to');
         $this->isValidUTF8Encoded($oValidator, 'from');

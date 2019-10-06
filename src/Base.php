@@ -36,6 +36,8 @@ class Base
     */
     protected $camooClassicApiVersion = Constants::END_POINT_VERSION;
 
+    /* @var Array Errors */
+    private $_errors = [];
 
     /**
      * @param $resourceName
@@ -130,8 +132,7 @@ class Base
         try {
             Objects\Base::create()->set($property, $value, $this->getDataObject());
         } catch (CamooSmsException $err) {
-            echo $err->getMessage();
-            exit();
+            $this->_errors[] = $err->getMessage();
         }
         return $this;
     }
@@ -147,9 +148,14 @@ class Base
         try {
             return Objects\Base::create()->get($this->getDataObject(), $sValidator);
         } catch (CamooSmsException $err) {
-            trigger_error($err->getMessage(), E_USER_ERROR);
-            return [];
+            $this->_errors[] = $err->getMessage();
         }
+        return [];
+    }
+
+    protected function getErrors()
+    {
+        return $this->_errors;
     }
 
     /**
@@ -177,12 +183,8 @@ class Base
      */
     protected function decode(string $sBody)
     {
-        try {
-            $sDecoder = 'decode' .ucfirst($this->getResponseFormat());
-            return $this->{$sDecoder}($sBody);
-        } catch (CamooSmsException $e) {
-            return $e->getMessage();
-        }
+        $sDecoder = 'decode' .ucfirst($this->getResponseFormat());
+        return $this->{$sDecoder}($sBody);
     }
 
     /**
@@ -194,21 +196,9 @@ class Base
      */
     private function decodeJson(string $sBody)
     {
-        try {
-            if (($oData = json_decode($sBody)) === null
-                    && (json_last_error() !== JSON_ERROR_NONE)) {
-                trigger_error(json_last_error_msg(), E_USER_ERROR);
-                return null;
-            }
-        } catch (CamooException $e) {
-            trigger_error($e->getMessage(), E_USER_ERROR);
-            return null;
-        }
-        try {
+        if (($oData = json_decode($sBody)) !== null
+                    && (json_last_error() === JSON_ERROR_NONE)) {
             return Lib\Utils::normaliseKeys($oData);
-        } catch (CamooException $err) {
-            trigger_error($err->getMessage(), E_USER_WARNING);
-            return $oData;
         }
     }
 
@@ -224,14 +214,12 @@ class Base
     {
         try {
             $oXML = new \SimpleXMLElement($sBody);
-            if (($sData =$oXML->asXML()) === false) {
-                trigger_error('XML response couldn\'t be decoded', E_USER_ERROR);
-                return null;
+            if (($sData =$oXML->asXML()) !== false) {
+                return $sData;
             }
-        } catch (CamooException $e) {
-            return $e->getMessage();
+        } catch (\Exception $err) {
+            print $err->getMessage();
         }
-        return $sData;
     }
 
     /**
@@ -244,20 +232,24 @@ class Base
      * @return mixed
      * @author Camoo Sarl
      */
-    protected function execRequest(string $sRequestType, bool $bWithData = true, string $sObjectValidator = null)
+    public function execRequest(string $sRequestType, bool $bWithData = true, string $sObjectValidator = null, $oClient=null)
     {
-        $oHttpClient = new HttpClient($this->getEndPointUrl(), $this->getCredentials());
+        $oHttpClient = $oClient === null? new HttpClient($this->getEndPointUrl(), $this->getCredentials()) : $oClient;
         $data = [];
-        if ($bWithData === true) {
+        if ($bWithData === true && empty($this->getErrors())) {
             $data = null === $sObjectValidator? $this->getData() : $this->getData($sObjectValidator);
             $oClassObj = $this->getDataObject();
             if (is_object($oClassObj) && $oClassObj instanceof \Camoo\Sms\Objects\Message && array_key_exists('message', $data) && $oClassObj->encrypt === true) {
-                $data['message'] = $this->encryptMsg($data['message']);
+                $sPerm = !array_key_exists('pgp_public_file', $data)? null : $data['pgp_public_file'];
+                $data['message'] = $this->encryptMsg($data['message'], $sPerm);
             }
             if (is_object($oClassObj) && $oClassObj instanceof \Camoo\Sms\Objects\Message && array_key_exists('to', $data)) {
                 $xTo = $data['to'];
                 $data['to'] = is_array($xTo)? implode(',', array_map(Constants::MAP_MOBILE, $xTo)) : $xTo;
             }
+        }
+        if (!empty($this->getErrors())) {
+            throw new CamooSmsException(['_error' => $this->getErrors()]);
         }
         if (array_key_exists('encrypt', $data)) {
             unset($data['encrypt']);
@@ -271,18 +263,18 @@ class Base
      * @param string $sMessage
      * @return string encrpted $sMessage
      */
-    protected function encryptMsg(string $sMessage) : string
+    protected function encryptMsg(string $sMessage, $sPubFile=null) : string
     {
-        $sPubFile = dirname(__DIR__) . Constants::DS.'config'.Constants::DS.'keys' . Constants::DS . 'cert.pem';
-        if (!file_exists($sPubFile) || ($sContent = file_get_contents($sPubFile)) === false) {
+        $sPubFile = null !== $sPubFile? $sPubFile : dirname(__DIR__) . Constants::DS.'config'.Constants::DS.'keys' . Constants::DS . 'cert.pem';
+        if (!file_exists($sPubFile) || empty($sContent = file_get_contents($sPubFile))) {
             return $sMessage;
         }
         try {
             $oPGP = new \nicoSWD\GPG\GPG();
             $sPubKey = new \nicoSWD\GPG\PublicKey($sContent);
             return $oPGP->encrypt($sPubKey, $sMessage);
-        } catch (CamooSmsException $err) {
-            trigger_error($err->getMessage(), E_USER_ERROR);
+        } catch (\Exception $err) {
+            $this->_errors[] = $err->getMessage();
             return $sMessage;
         }
     }
@@ -297,10 +289,10 @@ class Base
         return !empty(static::$_ahConfigs['App']['response_format'])? static::$_ahConfigs['App']['response_format'] : Constants::RESPONSE_FORMAT;
     }
 
-    protected function execBulk($hCallBack)
+    public function execBulk($hCallBack)
     {
         $oClassObj = $this->getDataObject();
-        if (!$oClassObj->has('to')) {
+        if (!$oClassObj->has('to') || empty($oClassObj->to)) {
             return false;
         }
         return Lib\Utils::backgroundProcess($this->getData(), $this->getCredentials(), $hCallBack);
