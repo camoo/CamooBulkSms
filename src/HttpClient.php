@@ -35,16 +35,11 @@ class HttpClient
      * @var int
      */
     private $timeout = Constants::CLIENT_TIMEOUT;
-    
+
     /**
     * @var mixed
     */
     private $hAuthentication = [];
-    
-    /**
-     * @var object
-     */
-    private $oClient = null;
 
     /**
      * @var array
@@ -72,10 +67,6 @@ class HttpClient
         }
         if (!empty($timeout)) {
             $this->timeout = $timeout;
-        }
-
-        if ($this->oClient === null) {
-            $this->oClient = new Client(['timeout' => $this->timeout]);
         }
     }
 
@@ -118,7 +109,7 @@ class HttpClient
      *
      * @throws HttpClientException
      */
-    public function performRequest(string $method, array $data = [], array $headers = [])
+    public function performRequest(string $method, array $data = [], array $headers = [], $oClient=null)
     {
         $this->setHeader($headers);
         //VALIDATE HEADERS
@@ -130,16 +121,14 @@ class HttpClient
         }
 
         try {
-            $oResponse = $this->oClient->request($sMethod, $this->endpoint, [$this->hRequestVerbs[$sMethod] => $data, 'headers' => $hHeaders]);
+            $client = null === $oClient? new Client(['timeout' => $this->timeout]) : $oClient;
+            $oResponse = $client->request($sMethod, $this->endpoint, [$this->hRequestVerbs[$sMethod] => $data, 'headers' => $hHeaders]);
             if ($oResponse->getStatusCode() === 200) {
                 return (string) $oResponse->getBody();
             }
             throw new HttpClientException();
         } catch (RequestException $e) {
             throw new HttpClientException(Psr7\str($e->getRequest()));
-            if ($e->hasResponse()) {
-                throw new HttpClientException(Psr7\str($e->getResponse()));
-            }
         }
     }
 
