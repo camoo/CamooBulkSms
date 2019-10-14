@@ -1,6 +1,13 @@
-[![N|Solid](https://www.camoo.hosting/img/logos/logoDomain.png)](https://www.camoo.cm/bulk-sms)
+<p align="center">
+  <a href="https://www.camoo.cm/bulk-sms" target="_blank" >
+    <img alt="CamooSms" src="https://www.camoo.hosting/img/logos/logoDomain.png"/>
+  </a>
+</p>
+<p align="center">
+	PHP SMS API Sending SMS via the <strong><em>CAMOO SMS gateway</em></strong>
+</p>
 
-PHP SMS API Sending SMS via the **_CAMOO SMS gateway_**
+[![pipeline status](https://travis-ci.com/camoo/sms.svg?branch=master)](https://travis-ci.com/camoo/sms)
 
 Requirement
 -----------
