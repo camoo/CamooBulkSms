@@ -137,7 +137,6 @@ final class Message extends Base
             ->rule(function ($field, $value, $params, $fields) {
                 return file_exists($value);
             }, 'pgp_public_file')->message("{field} does not exist");
-
         $this->isPossibleNumber($oValidator, 'to');
         $this->isValidUTF8Encoded($oValidator, 'from');
         $this->isValidUTF8Encoded($oValidator, 'message');

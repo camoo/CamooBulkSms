@@ -33,12 +33,12 @@ class Constants
     public static function getPhpVersion() : string
     {
         if (!defined('PHP_VERSION_ID')) {
-            $version = explode('.', PHP_VERSION);
-            define('PHP_VERSION_ID', $version[0] * 10000 + $version[1] * 100 + $version[2]);
+            $version = explode('.', PHP_VERSION); //@codeCoverageIgnore
+            define('PHP_VERSION_ID', $version[0] * 10000 + $version[1] * 100 + $version[2]); //@codeCoverageIgnore
         }
 
         if (PHP_VERSION_ID < static::MIN_PHP_VERSION) {
-            trigger_error(static::ERROR_PHP_VERSION, E_USER_ERROR);
+            trigger_error(static::ERROR_PHP_VERSION, E_USER_ERROR);//@codeCoverageIgnore
         }
 
         return 'PHP/' . PHP_VERSION_ID;

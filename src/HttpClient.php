@@ -168,7 +168,7 @@ class HttpClient
             $sWPV = '';
             global $wp_version;
             if ($wp_version) {
-                $sWPV = $wp_version;
+                $sWPV = $wp_version;//@codeCoverageIgnore
             }
             $sIdentity = 'WP'.$sWPV.'/CamooSMS' .WP_CAMOO_SMS_VERSION .Constants::DS;
         }
