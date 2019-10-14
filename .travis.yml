@@ -10,3 +10,6 @@ cache:
 
 before_script:
   - composer update
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash);

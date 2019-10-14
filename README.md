@@ -10,6 +10,9 @@
     <a href="https://travis-ci.com/camoo/sms" target="_blank">
         <img alt="Build Status" src="https://travis-ci.com/camoo/sms.svg?branch=master">
     </a>
+	<a href="https://codecov.io/gh/camoo/sms">
+  		<img src="https://codecov.io/gh/camoo/sms/branch/master/graph/badge.svg" />
+	</a>
 </p>
 
 Requirement
