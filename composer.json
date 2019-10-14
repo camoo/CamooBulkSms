@@ -4,7 +4,6 @@
 	"type": "library",
 	"require": {
 		"php": ">=7.0",
-		"camoo/sms": "3.1.*",
 		"vlucas/valitron": "^1.4",
 		"guzzlehttp/guzzle": "^6.3",
 		"ext-mbstring": "*",

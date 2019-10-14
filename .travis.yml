@@ -9,4 +9,4 @@ cache:
     - $HOME/.composer/cache
 
 before_script:
-  - composer require --dev camoo/sms "dev-master"
+  - composer require update
