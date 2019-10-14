@@ -6,8 +6,11 @@
 <p align="center">
 	PHP SMS API Sending SMS via the <strong><em>CAMOO SMS gateway</em></strong>
 </p>
-
-[![pipeline status](https://travis-ci.com/camoo/sms.svg?branch=master)](https://travis-ci.com/camoo/sms)
+<p align="center">
+    <a href="https://travis-ci.com/camoo/sms" target="_blank">
+        <img alt="Build Status" src="https://travis-ci.com/camoo/sms.svg?branch=master">
+    </a>
+</p>
 
 Requirement
 -----------
