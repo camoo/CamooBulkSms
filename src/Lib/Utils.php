@@ -212,16 +212,14 @@ class Utils
     {
         $default = ['path_to_php' => 'php'];
         $hCallBack += $default;
-        if (is_executable($hCallBack['path_to_php'])) {
-            $sTmpName =  self::randomStr().'.bulk';
-            if (file_put_contents(\Camoo\Sms\Constants::getSMSPath(). 'tmp/' .$sTmpName, json_encode($hData).PHP_EOL, LOCK_EX)) {
-                $sBIN = $hCallBack['path_to_php'] .' -f '. \Camoo\Sms\Constants::getSMSPath(). 'bin/camoo.php';
-                $sPASS = json_encode([$hCallBack,$sTmpName,$hCredentials]);
-                $oProcess = new BackgroundProcess($sBIN .' ' .base64_encode($sPASS));
-                return $oProcess->run();
-            }
+        $sTmpName =  self::randomStr().'.bulk';
+        if (file_put_contents(\Camoo\Sms\Constants::getSMSPath(). 'tmp/' .$sTmpName, json_encode($hData).PHP_EOL, LOCK_EX)) {
+            $sBIN = $hCallBack['path_to_php'] .' -f '. \Camoo\Sms\Constants::getSMSPath(). 'bin/camoo.php';
+            $sPASS = json_encode([$hCallBack,$sTmpName,$hCredentials]);
+            $oProcess = new BackgroundProcess($sBIN .' ' .base64_encode($sPASS));
+            return $oProcess->run();
         }
-        return null;
+        return 0;
     }
 
     public static function decodeJson($sJSON, $bAsHash = false)
