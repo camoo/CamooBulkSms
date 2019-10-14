@@ -210,7 +210,7 @@ class Utils
 
     public static function backgroundProcess(array $hData, array $hCredentials, array $hCallBack=[])
     {
-        $default = ['path_to_php' => '/usr/bin/php'];
+        $default = ['path_to_php' => 'php'];
         $hCallBack += $default;
         if (is_executable($hCallBack['path_to_php'])) {
             $sTmpName =  self::randomStr().'.bulk';
