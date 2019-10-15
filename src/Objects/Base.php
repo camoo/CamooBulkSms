@@ -34,7 +34,7 @@ class Base
             $value = Utils::clearSender($value);
         }
         if ($sProperty === 'to') {
-            $value = is_array($value)? $value : [Utils::phoneNumberE164Format($value)];
+            $value = Utils::makeNumberE164Format($value);
         }
 
         $oClass->$sProperty = $value;
@@ -72,8 +72,6 @@ class Base
             ->rule(function ($field, $value, $params, $fields) {
                 if (is_null($value) || empty($value)) {
                     return false;
-                } elseif (is_string($value) && trim($value) === '') {
-                    return false;
                 }
                 return Utils::isCmMTN($value);
             }, $sParam)->message("{field} is not carried by MTN Cameroon");
@@ -83,25 +81,30 @@ class Base
     {
         $oValidator
             ->rule(function ($field, $value, $params, $fields) {
-                if (is_null($value) || empty($value)) {
-                    return false;
-                }
                 return mb_check_encoding($value, 'UTF-8');
             }, $sParam)->message("{field} needs to be a valid UTF-8 encoded string");
     }
 
-    public function notBlankRule(&$oValidator, string $sParam) : void
+    public function notEmptyRule(&$oValidator, string $sParam) : void
     {
         $oValidator
             ->rule(function ($field, $value, $params, $fields) {
-                if (is_null($value) || empty($value)) {
-                    return false;
-                } elseif (is_string($value) && trim($value) === '') {
-                    return false;
-                }
-                return true;
+                return !empty($value);
             }, $sParam)->message("{field} can not be blank/empty...");
     }
+
+    /**
+     * Validates non empty data
+     *
+     * @return void
+     * @deprecated 3.1.3 Use notEmptyRule() instead.
+     */
+	 // @codeCoverageIgnoreStart
+    public function notBlankRule(&$oValidator, string $sParam) : void
+    {
+		$this->notEmptyRule($oValidator, $sParam);
+    }
+	 // @codeCoverageIgnoreEnd
 
     public function isPossibleNumber(&$oValidator, string $sParam) : void
     {

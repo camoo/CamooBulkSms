@@ -23,6 +23,7 @@ class Constants
     const SMS_MAX_RECIPIENTS = 50;
     const CLEAR_OBJECT = [\Camoo\Sms\Base::class, 'clear'];
     const MAP_MOBILE =[\Camoo\Sms\Lib\Utils::class,'mapMobile'];
+    const MAP_E164FORMAT =[\Camoo\Sms\Lib\Utils::class,'phoneNumberE164Format'];
     const PERSONLIZE_MSG_KEYS = ['%NAME%'];
 
     public static $asCredentialKeyWords = ['api_key', 'api_secret'];

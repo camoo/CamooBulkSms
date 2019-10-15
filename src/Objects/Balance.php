@@ -26,13 +26,13 @@ final class Balance extends Base
      *
      * @var string
      */
-    protected $phonenumber;
+    public $phonenumber;
 
-     /**
-     * amount that should be recharged
-     *
-     * @var string
-     */
+    /**
+    * amount that should be recharged
+    *
+    * @var string
+    */
     public $amount = null;
 
     public function validatorDefault(Validator $oValidator) : Validator

@@ -147,7 +147,7 @@ final class Message extends Base
     {
         $oValidator
             ->rule('required', ['id']);
-        $this->notBlankRule($oValidator, 'id');
+        $this->notEmptyRule($oValidator, 'id');
         return $oValidator;
     }
 }

@@ -254,6 +254,21 @@ class Utils
         return null;
     }
 
+    public static function makeNumberE164Format($xValue)
+    {
+        if (is_string($xValue)) {
+            return [self::phoneNumberE164Format($xValue)];
+        }
+        if (is_array($xValue) && empty($xValue['mobile'])) {
+            $xValue = array_map(function ($number) {
+                if (is_string($number) || is_numeric($number)) {
+                    return self::phoneNumberE164Format($number);
+                }
+            }, $xValue);
+        }
+        return array_filter($xValue);
+    }
+
     public static function satanizer($str, $keep_newlines = false)
     {
         if (is_object($str) || is_array($str)) {
