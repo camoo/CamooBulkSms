@@ -18,11 +18,7 @@ class Runner
                 if (file_exists($sFile) && is_readable($sFile)) {
                     if (($sData = file_get_contents($sFile)) && ($hData = \Camoo\Sms\Lib\Utils::decodeJson($sData, true))) {
                         unlink($sFile);
-                        try {
-                            \Camoo\Sms\Lib\Utils::doBulkSms($hData, $hCredentials, $hCallBack);
-                        } catch (CamooSmsException $err) {
-                            echo "Error occured...";
-                        }
+                        \Camoo\Sms\Lib\Utils::doBulkSms($hData, $hCredentials, $hCallBack);
                     }
                 }
             }

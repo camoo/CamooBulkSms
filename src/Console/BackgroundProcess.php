@@ -10,13 +10,18 @@ class BackgroundProcess
         $this->command  = $command;
     }
 
+    protected function getOS()
+    {
+        return strtoupper(PHP_OS);
+    }
+
     public function run(string $sOutputFile = '/dev/null', bool $bAppend = false)
     {
         if ($this->command === null) {
             return null;
         }
 
-        if ($sOS = strtoupper(PHP_OS)) {
+        if ($sOS = $this->getOS()) {
             if (substr($sOS, 0, 3) === 'WIN') {
                 shell_exec(sprintf('%s &', $this->command, $sOutputFile));
                 return time();

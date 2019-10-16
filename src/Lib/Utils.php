@@ -170,7 +170,7 @@ class Utils
                 $hDataLock['response'] = json_encode($oResponse);
                 static::doBulkCallback($hCallBack, $hDataLock);
             } catch (CamooSmsException $err) {
-                trigger_error('ERREOR occured during sending SMS to' . $xNumber, E_USER_WARNING);
+                @trigger_error('ERREOR occured during sending SMS to' . $xNumber, E_USER_WARNING);
                 continue;
             }
             if ($iCount === $batch_loop) {
@@ -213,11 +213,13 @@ class Utils
         $default = ['path_to_php' => 'php'];
         $hCallBack += $default;
         $sTmpName =  self::randomStr().'.bulk';
-        if (file_put_contents(\Camoo\Sms\Constants::getSMSPath(). 'tmp/' .$sTmpName, json_encode($hData).PHP_EOL, LOCK_EX)) {
-            $sBIN = $hCallBack['path_to_php'] .' -f '. \Camoo\Sms\Constants::getSMSPath(). 'bin/camoo.php';
-            $sPASS = json_encode([$hCallBack,$sTmpName,$hCredentials]);
-            $oProcess = new BackgroundProcess($sBIN .' ' .base64_encode($sPASS));
-            return $oProcess->run();
+        if ($hCallBack['path_to_php'] === 'php' || is_executable($hCallBack['path_to_php'])) {
+            if (file_put_contents(\Camoo\Sms\Constants::getSMSPath(). 'tmp/' .$sTmpName, json_encode($hData).PHP_EOL, LOCK_EX)) {
+                $sBIN = $hCallBack['path_to_php'] .' -f '. \Camoo\Sms\Constants::getSMSPath(). 'bin/camoo.php';
+                $sPASS = json_encode([$hCallBack,$sTmpName,$hCredentials]);
+                $oProcess = new BackgroundProcess($sBIN .' ' .base64_encode($sPASS));
+                return $oProcess->run();
+            }
         }
         return 0;
     }
