@@ -8,7 +8,11 @@ cache:
     - vendor
     - $HOME/.composer/cache
 
+services:
+  - mysql
+
 before_script:
+  - mysql -e 'CREATE DATABASE cm_test;'
   - composer update
 
 after_success:

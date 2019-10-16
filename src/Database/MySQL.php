@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace Camoo\Sms\Database;
+
 use Camoo\Sms\Interfaces\Drivers;
 
 /**
@@ -39,58 +40,38 @@ class MySQL implements Drivers
 
     private function escape_string($string)
     {
-        return $this->is_mysqli()?  call_user_func($this->dbh_escape, $this->connection, trim($string)) : call_user_func($this->dbh_escape, trim($string));
+		return call_user_func($this->dbh_escape, $this->connection, trim($string));
     }
 
     public function close()
     {
-        return $this->is_mysqli()?  mysqli_close($this->connection) : mysql_close();
+        return mysqli_close($this->connection);
     }
 
     private function getMysqlHandlers()
     {
-        if (function_exists('mysqli_connect')) {
-            return array('mysqli_connect', 'mysqli_query', 'mysqli_error', 'mysqli_real_escape_string');
-        }
-
-        if (function_exists('mysql_connect')) {
-            return array('mysql_connect', 'mysql_query', 'mysql_error', 'mysql_real_escape_string');
-        }
+        return array('mysqli_connect', 'mysqli_query', 'mysqli_error', 'mysqli_real_escape_string');
     }
 
-    private function db_connect($config)
+    public function db_connect($config)
     {
         if (isset($config['table_prefix'])) {
             $this->table_prefix = $config['table_prefix'];
         }
 
-        if ($this->is_mysqli()) {
+        try {
             $connection = call_user_func($this->dbh_connect, $config['db_host'], $config['db_user'], $config['db_password'], $config['db_name'], $config['db_port']);
-        } else {
-            $connection = call_user_func($this->dbh_connect, $config['db_host'], $config['db_user'], $config['db_password'], $config['db_name']);
-            mysql_select_db($config['db_name']);
-        }
-
-        if (!$connection) {
-            echo "Failed to connect to MySQL: " . call_user_func($this->dbh_error) . "\n";
+        } catch (\Exception $err) {
+            echo "Failed to connect to MySQL: " . $err->getMessage() . "\n";
             return 0;
         }
 
         return $connection;
     }
 
-    public function is_mysqli()
-    {
-        return $this->dbh_connect === 'mysqli_connect';
-    }
-
     public function query($query)
     {
-        if ($this->is_mysqli()) {
-            $result = call_user_func($this->dbh_query, $this->connection, $query);
-        } else {
-            $result = call_user_func($this->dbh_query, $query);
-        }
+        $result = call_user_func($this->dbh_query, $this->connection, $query);
 
         if (!$result) {
             echo $this->getError();
@@ -100,11 +81,7 @@ class MySQL implements Drivers
 
     protected function getError()
     {
-        if ($this->is_mysqli()) {
-            return mysqli_error($this->connection);
-        } else {
-            return mysql_error();
-        }
+        return mysqli_error($this->connection);
     }
 
     public function insert(string $table, array $variables = [])
@@ -119,7 +96,7 @@ class MySQL implements Drivers
         $values = [];
         foreach ($variables as $field => $value) {
             $fields[] = $field;
-            $values[] = "'".$value."'";
+            $values[] = "'".$this->escape_string($value)."'";
         }
         $fields = ' (' . implode(', ', $fields) . ')';
         $values = '('. implode(', ', $values) .')';
