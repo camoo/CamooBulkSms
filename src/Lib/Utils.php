@@ -75,14 +75,13 @@ class Utils
     {
         // Remove any invalid characters
         $ret = preg_replace('/[^a-zA-Z0-9]/', '', (string)$inp);
-
         if (preg_match('/[a-zA-Z]/', $inp)) {
             // Alphanumeric format so make sure it's < 11 chars
             $ret = mb_substr($ret, 0, 11);
         } else {
             // Numerical, remove any prepending '00'
             if (mb_substr($ret, 0, 2) == '00') {
-                $ret = ltrim($ret, 0);
+                $ret = ltrim($ret, '0');
                 $ret = mb_substr($ret, 0, 15);
             }
         }
@@ -114,7 +113,7 @@ class Utils
         return null;
     }
 
-    public static function doBulkSms(array $hData, array $hCredentials, array $hCallBack=[]) : array
+    public static function doBulkSms(array $hData, array $hCredentials, array $hCallBack=[], $oMessage=null) : array
     {
         $asPersonlizeMsgFind = \Camoo\Sms\Constants::PERSONLIZE_MSG_KEYS;
         $iCount = 0;
@@ -140,7 +139,7 @@ class Utils
             $iCount++;
             try {
                 call_user_func(\Camoo\Sms\Constants::CLEAR_OBJECT);
-                $oMessage = \Camoo\Sms\Message::create($hCredentials['api_key'], $hCredentials['api_secret']);
+                $oMessage = null === $oMessage? \Camoo\Sms\Message::create($hCredentials['api_key'], $hCredentials['api_secret']) : $oMessage;
 
                 // PERSONALZE
                 $sName = '';
@@ -181,23 +180,27 @@ class Utils
         return $axMsgSent;
     }
 
-    private static function doBulkCallback($hCallBack, $data)
+    public static function doBulkCallback($hCallBack, $data, $oDB=null)
     {
         if (!empty($hCallBack['driver']) && !empty($hCallBack['db_config'])) {
             try {
-                $oDBInstance = call_user_func_array($hCallBack['driver'], $hCallBack['db_config']);
-                $oDB = $oDBInstance->getDB();
-                $hVariablesRow = $hCallBack['variables'];
-                $hVariables = [];
-                foreach ($hVariablesRow as $key => $sMap) {
-                    $hVariables[$key] = array_key_exists($sMap, $data)? $data[$sMap] : '';
+                $oDB = null === $oDB? $oDB = call_user_func_array($hCallBack['driver'], $hCallBack['db_config'])->getDB() : $oDB;
+                if ($oDB) {
+                    $hVariablesRow = array_key_exists('variables', $hCallBack)? $hCallBack['variables'] : [];
+                    $hVariables = [];
+                    foreach ($hVariablesRow as $key => $sMap) {
+                        $hVariables[$key] = array_key_exists($sMap, $data)? $data[$sMap] : '';
+                    }
+                    $sPrefix = !empty($hCallBack['db_config'][0]['table_prefix'])? $hCallBack['db_config'][0]['table_prefix'] : '';
+                    $sTableClient = !empty($hCallBack['db_config'][0]['table_sms'])? $hCallBack['db_config'][0]['table_sms'] : null;
+                    if (!empty($hVariables) && !empty($sTableClient)) {
+                        $sTable = $sPrefix.$sTableClient;
+                        $oDB->insert($sTable, $hVariables);
+                    }
+                    $oDB->close();
                 }
-                $sPrefix = !empty($hCallBack['db_config'][0]['table_prefix'])? $hCallBack['db_config'][0]['table_prefix'] : '';
-                $sTable = $sPrefix.$hCallBack['db_config'][0]['table_sms'];
-                $oDB->insert($sTable, $hVariables);
-                $oDB->close();
-            } catch (CamooSmsException $err) {
-                trigger_error('ERROR: doBulkCallback SMS. Check your DB config!', E_USER_ERROR);
+            } catch (\Exception | \TypeError $err) {
+                trigger_error('ERROR: doBulkCallback SMS:: '.$err->getMessage(), E_USER_ERROR);
             }
         }
     }
@@ -226,17 +229,10 @@ class Utils
 
     public static function decodeJson($sJSON, $bAsHash = false)
     {
-        try {
-            if (($xData = json_decode($sJSON, $bAsHash)) === null
-                && (json_last_error() !== JSON_ERROR_NONE)) {
-                return null;
-                trigger_error(json_last_error_msg(), E_USER_ERROR);
-            }
-        } catch (CamooSmsException $e) {
-            trigger_error($e->getMessage(), E_USER_ERROR);
-            return null;
+        if (($xData = json_decode($sJSON, $bAsHash)) !== null
+                && (json_last_error() === JSON_ERROR_NONE)) {
+            return $xData;
         }
-        return $xData;
     }
 
     public static function isMultiArray(array $option) : bool
@@ -282,10 +278,10 @@ class Utils
         }
         if (strpos($filtered, '<') !== false) {
             $callback = function ($match) {
-                if (false === strpos($matches[0], '>')) {
-                    return htmlentities($matches[0], ENT_QUOTES | ENT_IGNORE, "UTF-8");
+                if (false === strpos($match[0], '>')) {
+                    return htmlentities($match[0], ENT_QUOTES | ENT_IGNORE, "UTF-8");
                 }
-                return $matches[0];
+                return $match[0];
             };
             $filtered = preg_replace_callback('%<[^>]*?((?=<)|>|$)%', $callback, $filtered);
             $filtered = self::stripAllTags($filtered, false);

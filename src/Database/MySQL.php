@@ -34,13 +34,15 @@ class MySQL implements Drivers
     public function getDB()
     {
         list($this->dbh_connect, $this->dbh_query, $this->dbh_error, $this->dbh_escape) = $this->getMysqlHandlers();
-        $this->connection = $this->db_connect($this->getConf());
-        return $this;
+        if ($this->connection = $this->db_connect($this->getConf())) {
+            return $this;
+        }
+        return false;
     }
 
-    private function escape_string($string)
+    public function escape_string($string)
     {
-		return call_user_func($this->dbh_escape, $this->connection, trim($string));
+        return call_user_func($this->dbh_escape, $this->connection, trim($string));
     }
 
     public function close()
@@ -50,10 +52,10 @@ class MySQL implements Drivers
 
     private function getMysqlHandlers()
     {
-        return array('mysqli_connect', 'mysqli_query', 'mysqli_error', 'mysqli_real_escape_string');
+        return ['mysqli_connect', 'mysqli_query', 'mysqli_error', 'mysqli_real_escape_string'];
     }
 
-    public function db_connect($config)
+    protected function db_connect($config)
     {
         if (isset($config['table_prefix'])) {
             $this->table_prefix = $config['table_prefix'];
