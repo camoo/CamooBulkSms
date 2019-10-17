@@ -34,7 +34,7 @@ composer require camoo/sms
 ```
 ### Or go to
 
-   [Camoo-SMS-API-Latest Release](https://github.com/camoo/sms/releases/tag/v3.1.3)
+   [Camoo-SMS-API-Latest Release](https://github.com/camoo/sms/releases/tag/v3.1.4)
 
 And download the full version
 

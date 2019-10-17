@@ -8,7 +8,7 @@ namespace Camoo\Sms;
  */
 class Constants
 {
-    const CLIENT_VERSION = '3.1.3';
+    const CLIENT_VERSION = '3.1.4';
     const CLIENT_TIMEOUT = 10; // 10 sec
     const MIN_PHP_VERSION = 70000;
     const DS = '/';
