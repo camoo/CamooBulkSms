@@ -7,6 +7,7 @@ use \libphonenumber\PhoneNumber;
 use stdClass;
 use Camoo\Sms\Exception\CamooSmsException;
 use Camoo\Sms\Console\BackgroundProcess;
+use Camoo\Sms\Database\AppDb;
 
 class Utils
 {
@@ -167,7 +168,7 @@ class Utils
                 $hDataLock['to'] = is_array($xNumber)? implode(",", $xNumber) : $xNumber;
                 $hDataLock['message_id'] = static::getMessageKey($oResponse, 'message_id');
                 $hDataLock['response'] = json_encode($oResponse);
-                static::doBulkCallback($hCallBack, $hDataLock);
+                static::doBulkCallback($hCallBack, $hDataLock);//@codeCoverageIgnore
             } catch (CamooSmsException $err) {
                 @trigger_error('ERREOR occured during sending SMS to' . $xNumber, E_USER_WARNING);
                 continue;
@@ -184,7 +185,7 @@ class Utils
     {
         if (!empty($hCallBack['db_config'])) {
             try {
-                $oDB = null === $oDB? $oDB = call_user_func_array(\Camoo\Sms\Database\AppDb::getInstance, $hCallBack['db_config']) : $oDB;
+                $oDB = null === $oDB? $oDB = call_user_func_array([AppDb::class,'getInstance'], $hCallBack['db_config']) : $oDB;
                 if ($oDB) {
                     $hVariablesRow = array_key_exists('variables', $hCallBack)? $hCallBack['variables'] : [];
                     $hVariables = [];

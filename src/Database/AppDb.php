@@ -14,7 +14,6 @@ use \Doctrine\DBAL\Query\QueryBuilder;
  */
 class AppDb implements Drivers
 {
-    private static $_ahConfigs = [];
     private static $conn;
     private $execute = true;
 
@@ -34,7 +33,7 @@ class AppDb implements Drivers
     {
         $default = ['db_host' => 'localhost', 'db_port' => 3306, 'driver' => 'pdo_mysql'];
         $options += $default;
-        static::$_ahConfigs = [
+        $ahConfigs = [
             'driver'   => $options['driver'],
             'user'     => $options['db_user'],
             'password' => $options['db_password'],
@@ -42,7 +41,7 @@ class AppDb implements Drivers
             'host'     => $options['db_host'],
             'port'     => $options['db_port'],
         ];
-        static::$conn = DriverManager::getConnection(static::$_ahConfigs, new Configuration());
+        static::$conn = DriverManager::getConnection($ahConfigs, new Configuration());
         return new self;
     }
 

@@ -8,7 +8,7 @@ use \libphonenumber\PhoneNumberUtil;
 use \libphonenumber\PhoneNumber;
 use stdClass;
 use Camoo\Sms\Exception\CamooSmsException;
-use Camoo\Sms\Database\MySQL;
+use Camoo\Sms\Database\AppDb;
 use Camoo\Sms\Message;
 use PHPUnit\Framework\Error\Error;
 
@@ -280,7 +280,7 @@ class UtilsTest extends TestCase
       */
     public function testdoBulkCallbackSuccess()
     {
-        $dbMock = $this->getMockBuilder(MySQL::class)
+        $dbMock = $this->getMockBuilder(AppDb::class)
             ->setMethods(['insert','close'])
             ->getMock();
 
@@ -299,10 +299,10 @@ class UtilsTest extends TestCase
             'from' => 'YourCompany',
         ];
         $hCallback = [
-            'driver' => [\Camoo\Sms\Database\MySQL::class, 'getInstance'],
             'bulk_chunk' => 1,
             'db_config' => [
             [
+            'driver' => 'pdo_mysql',
             'db_name'     => 'test',
             'db_user'     => 'test',
             'db_password' => 'secret',
@@ -334,10 +334,10 @@ class UtilsTest extends TestCase
             'from' => 'YourCompany',
         ];
         $hCallback = [
-            'driver' => [\Camoo\Sms\Database\MariaDB::class, 'getInstance'],
             'bulk_chunk' => 1,
             'db_config' => [
                 [
+                'driver'      => 'pd_mysql',
                 'db_name'     => 'test',
                 'db_user'     => 'test',
                 'db_password' => 'secret',
@@ -359,7 +359,7 @@ class UtilsTest extends TestCase
       * @covers \Camoo\Sms\Lib\Utils::doBulkSms
       * @dataProvider doBulkSmsProvider
       */
-    public function testdoBulkSms($data, $bulk_chunk)
+    public function testdoBulkSmsSuccess($data, $bulk_chunk)
     {
         $rep = [
             'sms' => [
@@ -378,16 +378,8 @@ class UtilsTest extends TestCase
             ->method('send')
             ->will($this->returnValue(Utils::normaliseKeys($rep)));
         $hCallback = [
-            'driver' => [\Camoo\Sms\Database\MySQL::class, 'getInstance'],
             'bulk_chunk' => $bulk_chunk,
             'db_config' => [
-                [
-                'db_name'     => 'test',
-                'db_user'     => 'test',
-                'db_password' => 'secret',
-                'db_host'     => 'localhost',
-                'table_sms'   => 'my_table',
-                ]
             ],
             'variables' => [
             'message'    => 'message',
