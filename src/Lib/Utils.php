@@ -182,9 +182,9 @@ class Utils
 
     public static function doBulkCallback($hCallBack, $data, $oDB=null)
     {
-        if (!empty($hCallBack['driver']) && !empty($hCallBack['db_config'])) {
+        if (!empty($hCallBack['db_config'])) {
             try {
-                $oDB = null === $oDB? $oDB = call_user_func_array($hCallBack['driver'], $hCallBack['db_config'])->getDB() : $oDB;
+                $oDB = null === $oDB? $oDB = call_user_func_array(\Camoo\Sms\Database\AppDb::getInstance, $hCallBack['db_config']) : $oDB;
                 if ($oDB) {
                     $hVariablesRow = array_key_exists('variables', $hCallBack)? $hCallBack['variables'] : [];
                     $hVariables = [];

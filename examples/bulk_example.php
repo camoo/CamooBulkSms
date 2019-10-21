@@ -16,10 +16,10 @@ var_dump($oMessage->sendBulk());
 # TO do only if you store the messages in your own database
 $hCallback = [
     'path_to_php'  => '/usr/bin/php', // match your running php version. should be >= 7.1.0
-    'driver' => [\Camoo\Sms\Database\MySQL::class, 'getInstance'],
     'bulk_chunk' => 1,
     'db_config' => [
         [
+            'driver'      => 'pdo_mysql', // check the list of allowed drivers:
             'db_name'     => 'test',
             'db_user'     => 'test',
             'db_password' => 'secret',
