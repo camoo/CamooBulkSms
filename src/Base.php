@@ -1,10 +1,12 @@
 <?php
 declare(strict_types=1);
+
 namespace Camoo\Sms;
 
 use Camoo\Sms\Exception\CamooSmsException;
-use Cocur\BackgroundProcess\BackgroundProcess;
 use Camoo\Sms\Exception\HttpClientException;
+use SimpleXMLElement;
+use Exception;
 
 /**
  * Class Base
@@ -214,11 +216,11 @@ class Base
     private function decodeXml(string $sBody)
     {
         try {
-            $oXML = new \SimpleXMLElement($sBody);
+            $oXML = new SimpleXMLElement($sBody);
             if (($sData =$oXML->asXML()) !== false) {
                 return $sData;
             }
-        } catch (\Exception $err) {
+        } catch (Exception $err) {
             print $err->getMessage();
         }
     }
@@ -278,7 +280,7 @@ class Base
             $oPGP = new \nicoSWD\GPG\GPG();
             $sPubKey = new \nicoSWD\GPG\PublicKey($sContent);
             return $oPGP->encrypt($sPubKey, $sMessage);
-        } catch (\Exception $err) {
+        } catch (Exception $err) {
             $this->_errors[] = $err->getMessage();
             return $sMessage;
         }

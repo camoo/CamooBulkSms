@@ -1,8 +1,8 @@
 #!/usr/bin/php -q
 <?php
 
-if (version_compare(PHP_VERSION, '7.1.0', '<')) {
-    trigger_error('The CAMOO SMS Library requires PHP version 7.1.0 or higher', E_USER_ERROR);
+if (version_compare(PHP_VERSION, '7.0.0', '<')) {
+    trigger_error('The CAMOO SMS Library requires PHP version 7.0.0 or higher', E_USER_ERROR);
     exit;
 }
 

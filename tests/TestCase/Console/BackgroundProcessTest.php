@@ -4,6 +4,7 @@ namespace CamooSms\Test\TestCase\Console;
 
 use PHPUnit\Framework\TestCase;
 use Camoo\Sms\Console\BackgroundProcess;
+use Camoo\Sms\Exception\BackgroundProcessException;
 
 /**
  * Class BackgroundProcessTest
@@ -29,12 +30,41 @@ class BackgroundProcessTest extends TestCase
     public function testRunSuccess($command)
     {
         $run = new BackgroundProcess($command);
-        if (is_null($command)) {
-            $this->assertNull($run->run());
-        } else {
-            $this->assertIsInt($run->run());
-        }
+        $this->assertIsInt($run->run());
     }
+
+    /**
+     * @covers \Camoo\Sms\Console\BackgroundProcess::run
+     * @depends testInstance
+     */
+    public function testRunWithNullThrowsException()
+    {
+        $this->expectException(BackgroundProcessException::class);
+        $run = new BackgroundProcess(null);
+        $run->run();
+    }
+
+    /**
+     * @covers \Camoo\Sms\Console\BackgroundProcess::run
+     * @depends testInstance
+     */
+    public function testRunWithEmptyOSThrowsException()
+    {
+		$command = 'ls -l /tmp';
+        $this->expectException(BackgroundProcessException::class);
+        $run = new BackgroundProcess($command);
+
+        $runMock = $this->getMockBuilder(BackgroundProcess::class)
+            ->setMethods(['getOS'])
+            ->setConstructorArgs([$command])
+            ->getMock();
+
+        $runMock->expects($this->once())
+            ->method('getOS')
+            ->will($this->returnValue(null));
+        $runMock->run();
+    }
+
 
     /**
      * @covers \Camoo\Sms\Console\BackgroundProcess::run
@@ -43,6 +73,7 @@ class BackgroundProcessTest extends TestCase
      */
     public function testRunOther($command)
     {
+        $this->expectException(BackgroundProcessException::class);
         $run = new BackgroundProcess($command);
 
         $runMock = $this->getMockBuilder(BackgroundProcess::class)
@@ -53,8 +84,7 @@ class BackgroundProcessTest extends TestCase
         $runMock->expects($this->once())
             ->method('getOS')
             ->will($this->returnValue('Other'));
- 
-        $this->assertNull($runMock->run());
+        $runMock->run();
     }
 
     /**
@@ -81,7 +111,6 @@ class BackgroundProcessTest extends TestCase
     public function commandDataProvider()
     {
         return [
-            [null],
             ['ls -lart'],
             ['whoami'],
         ];
