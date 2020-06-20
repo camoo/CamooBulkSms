@@ -104,8 +104,8 @@ class AppDb implements Drivers
      *
      * @return void
      */
-    public function close()
+    public function close() : void
     {
-        return $this->getConnection()->close();
+        $this->getConnection()->close();
     }
 }

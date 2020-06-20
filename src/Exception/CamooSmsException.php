@@ -1,14 +1,15 @@
 <?php
 declare(strict_types=1);
+
 namespace Camoo\Sms\Exception;
 
-use Exception;
+use RuntimeException;
 
 /**
  * Class CamooSmsException
  *
  */
-class CamooSmsException extends Exception
+class CamooSmsException extends RuntimeException
 {
 
     /**
